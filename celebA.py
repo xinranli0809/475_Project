@@ -15,7 +15,7 @@ tf.config.experimental.set_memory_growth(physicalDevices[0],True)
 
 ## To use more than one attributes, we will do the same number of 2 class classification over all attributes
 #what characteristic are we going to train and test for? (note if set to 'all' it'll use all of them)
-ATTR='Male'
+ATTR='Male','Eyeglasses'
 
 # set up working directory
 currentWorkingDirectory = os.getcwd()
@@ -35,8 +35,8 @@ attributes.replace(to_replace=-1, value=0, inplace=True)
 # if ATTR='all', then set ATTR equals to the name of every column in attributes
 if(ATTR=='all'):
     ATTR=list(attributes.columns)
-elif(isinstance(ATTR, str)):
-    ATTR=[ATTR]
+else:
+    ATTR=list(ATTR)
 
 
 # modify the partitions file so that the index is the name of the image
@@ -54,6 +54,12 @@ def load_reshape_img(fname):
     x = keras.preprocessing.image.img_to_array(img)/255.
     # reshape into shape of [1, 218, 178, 3]
     x = x.reshape((1,) + x.shape)
+
+    # These should do the exact same thing.
+    # fname = imageDirectory+str(fname)
+    # img = np.asarray(PIL.Image.open(fname))/255.
+    # img = img.reshape((1,) + img.shape)
+
     return x
 
 def generate_df(df,partition, attr, num_samples):
@@ -149,32 +155,83 @@ def generate_df(df,partition, attr, num_samples):
 #########################################################################
 
 # Load pretrained model
-xTest, yTest, indexes = generate_df(parAttr,1, ATTR, 100)
-newModel = tf.keras.models.load_model('./projectModelSave')
+
+print('Loading pretrained model, this will take a while (~30 sec to 1 min)')
+# this can be speed up by only saving and loading the weights, maybe
+newModel = tf.keras.models.load_model('./projectModelSave',compile=False)
+print('Model loaded')
 # newModel.summary()
+# xTest, yTest, indexes = generate_df(parAttr,1, ATTR, 100)
 # newModel.evaluate(xTest,yTest,verbose = 2)
 
-def randomOneTest():
-    xT, xTruth, dataFrameIndex = generate_df(parAttr,2, ATTR, 1)
-    Prob = newModel.predict(xT)
-    attrResult = 0
-    result = 0
-    if np.argmax(Prob) == 1:
-        attrResult = 1
-    if np.argmax(Prob) == np.argmax(xTruth):
-        result = 1
-    fname = imageDirectory+str(dataFrameIndex[0])
-    image = PIL.Image.open(fname)
-    image.show()
-    if attrResult == 1:
-        print("The subject has the attribute: "+ str(ATTR))
-    else:
-        print("The subject does not have the attribute: "+ str(ATTR))
-    if result == 1:
-        print("The prediction is correct.")
-    else:
-        print("The prediction is NOT correct.")
-    return attrResult, result, fname
 
-randomOneTest()
+def testWithTruth(fname):
+    iname = imageDirectory+str(fname)
+    img = PIL.Image.open(iname)
+    img.show()
+    img = np.asarray(img)/255.
+    for i in ATTR:
+        groundTruth = keras.utils.to_categorical(attributes.loc[fname,i],2)
+        # print(np.argmax(groundTruth))
+        x = img.reshape((1,) + img.shape)
+        Prob = newModel.predict(x)
+        attrResult = 0
+        result = 0
+        if np.argmax(Prob) == 1:
+            attrResult = 1
+        if np.argmax(Prob) == np.argmax(groundTruth):
+            result = 1
+
+        if attrResult == 1:
+            print("The subject has the attribute: "+ str(i))
+        else:
+            print("The subject does not have the attribute: "+ str(i))
+        if result == 1:
+            print("The prediction is correct.")
+        else:
+            print("The prediction is NOT correct.")
+    
+
+def test(fname):
+    iname = imageDirectory+str(fname)
+    img = PIL.Image.open(iname)
+    img.show()
+    img = np.asarray(img)/255.
+    for i in ATTR:
+        x = img.reshape((1,) + img.shape)
+        Prob = newModel.predict(x)
+        attrResult = 0
+        result = 0
+        if np.argmax(Prob) == 1:
+            attrResult = 1
+        if attrResult == 1:
+            print("The subject has the attribute: "+ str(i))
+        else:
+            print("The subject does not have the attribute: "+ str(i))
+
+# This function randomly picks images for each attributes you set to evaluate.
+def randomTest():
+    for i in ATTR:
+        xT, xTruth, dataFrameIndex = generate_df(parAttr,2, i, 1)
+        Prob = newModel.predict(xT)
+        attrResult = 0
+        result = 0
+        if np.argmax(Prob) == 1:
+            attrResult = 1
+        if np.argmax(Prob) == np.argmax(xTruth):
+            result = 1
+        fname = imageDirectory+str(dataFrameIndex[0])
+        image = PIL.Image.open(fname)
+        image.show()
+        if attrResult == 1:
+            print("The subject has the attribute: "+ str(i))
+        else:
+            print("The subject does not have the attribute: "+ str(i))
+        if result == 1:
+            print("The prediction is correct.")
+        else:
+            print("The prediction is NOT correct.")
+
+# randomTest()
+# testWithTruth('193508.jpg')
 
