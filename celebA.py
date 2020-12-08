@@ -9,19 +9,20 @@ from tensorflow import keras
 from tensorflow.keras import layers
 
 # comment these off if giving you error
-physicalDevices = tf.config.list_physical_devices('GPU')
+# physicalDevices = tf.config.list_physical_devices('GPU')
 # print(physicalDevices)
-tf.config.experimental.set_memory_growth(physicalDevices[0],True)
+# tf.config.experimental.set_memory_growth(physicalDevices,True)
 
 ## To use more than one attributes, we will do the same number of 2 class classification over all attributes
 #what characteristic are we going to train and test for? (note if set to 'all' it'll use all of them)
-ATTR='Male','Eyeglasses'
+ATTR= ['Male','Attractive','Eyeglasses','Wearing_Hat']
 
 # set up working directory
 currentWorkingDirectory = os.getcwd()
-imageDirectory = os.path.join(currentWorkingDirectory,"CelebA\\Img\\img_align_celeba\\") 
-attributesDirectory = os.path.join(currentWorkingDirectory,"CelebA\\Anno\\list_attr_celeba.csv") 
-partitionsDirectory = os.path.join(currentWorkingDirectory,"CelebA\\Eval\\list_eval_partition.csv") 
+imageDirectory = 'C:/Users/nalex/Downloads/img_align_celeba/img_align_celeba/'
+attributesDirectory = 'list_attr_celeba.csv'
+partitionsDirectory = 'list_eval_partition.csv'
+
 # read the attributes and image data partition file
 attributes = pd.read_csv(attributesDirectory)
 partitions = pd.read_csv(partitionsDirectory)
@@ -35,8 +36,6 @@ attributes.replace(to_replace=-1, value=0, inplace=True)
 # if ATTR='all', then set ATTR equals to the name of every column in attributes
 if(ATTR=='all'):
     ATTR=list(attributes.columns)
-else:
-    ATTR=list(ATTR)
 
 
 # modify the partitions file so that the index is the name of the image
@@ -124,42 +123,41 @@ def generate_df(df,partition, attr, num_samples):
 # print(x.shape)
 
 
-# zz = generate_df(parAttr,0, ATTR, TRAINING_SAMPLES)
-# print(zz)
-
 # Uncomment from here if you don't have a pretrained model
 #########################################################################
-# inceptionModel = keras.applications.InceptionV3(include_top = False)
-# inceptionModel.trainable = False
-# # print(inceptionModel.summary())
-# x = inceptionModel.output
-# x = layers.GlobalAveragePooling2D()(x)
-# x = layers.Dense(1024, activation="relu")(x)
-# x = layers.Dropout(0.5)(x)
-# x = layers.Dense(512, activation="relu")(x)
-# predictions = layers.Dense(2, activation="softmax")(x)
-# finalModel = keras.Model(inputs = inceptionModel.input, outputs = predictions)
 
-# finalModel.compile(optimizer = 'adam',
-#                 loss=tf.keras.losses.CategoricalCrossentropy(from_logits=False),
-#                 metrics=['categorical_accuracy'])
 
-# xTrain, yTrain, indexes = generate_df(parAttr,0, ATTR, 100000)
-# xTest, yTest, indexes = generate_df(parAttr,2, ATTR, 1000)
-# print(xTrain.shape)
-# print(yTrain.shape)
-# with tf.device('/gpu:0'):
-#     finalModel.fit(xTrain,yTrain,batch_size = 32, epochs = 1)
-#     finalModel.evaluate(xTest,yTest,batch_size = 32)
-# finalModel.save('./projectModelSave')
+inceptionModel = keras.applications.InceptionV3(include_top = False)
+inceptionModel.trainable = False
+# print(inceptionModel.summary())
+x = inceptionModel.output
+x = layers.GlobalAveragePooling2D()(x)
+x = layers.Dense(1024, activation="relu")(x)
+x = layers.Dropout(0.5)(x)
+x = layers.Dense(512, activation="relu")(x)
+predictions = layers.Dense(2, activation="softmax")(x)
+finalModel = keras.Model(inputs = inceptionModel.input, outputs = predictions)
+
+finalModel.compile(optimizer = 'adam',
+                loss=tf.keras.losses.CategoricalCrossentropy(from_logits=False),
+                metrics=['categorical_accuracy'])
+
+for attr in ATTR:
+
+    xTrain, yTrain, indexes = generate_df(parAttr,0, attr, 10000)
+    xTest, yTest, indexes = generate_df(parAttr,2, attr, 1000)
+    print(xTrain.shape)
+    print(yTrain.shape)
+    with tf.device('/gpu:0'):
+        finalModel.fit(xTrain,yTrain,batch_size = 32, epochs = 1)
+        finalModel.evaluate(xTest,yTest,batch_size = 32)
+    finalModel.save('./' + attr)
+    
 #########################################################################
 
 # Load pretrained model
 
-print('Loading pretrained model, this will take a while (~30 sec to 1 min)')
-# this can be speed up by only saving and loading the weights, maybe
-newModel = tf.keras.models.load_model('./projectModelSave',compile=False)
-print('Model loaded')
+
 # newModel.summary()
 # xTest, yTest, indexes = generate_df(parAttr,1, ATTR, 100)
 # newModel.evaluate(xTest,yTest,verbose = 2)
@@ -193,13 +191,20 @@ def testWithTruth(fname):
     
 
 def test(fname):
-    iname = imageDirectory+str(fname)
+
+    iname = str(fname)
     img = PIL.Image.open(iname)
-    img.show()
     img = np.asarray(img)/255.
     for i in ATTR:
+
+        print('Loading pretrained model, this will take a while (~30 sec to 1 min)')
+        # this can be speed up by only saving and loading the weights, maybe
+        newModel = tf.keras.models.load_model('./' + i,compile=False)
+        print('Model loaded')
+
         x = img.reshape((1,) + img.shape)
         Prob = newModel.predict(x)
+        print(Prob)
         attrResult = 0
         result = 0
         if np.argmax(Prob) == 1:
@@ -231,6 +236,8 @@ def randomTest():
             print("The prediction is correct.")
         else:
             print("The prediction is NOT correct.")
+
+test('IMG_5970.jpg')
 
 # randomTest()
 # testWithTruth('193508.jpg')
