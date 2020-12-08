@@ -1,4 +1,3 @@
-import pygame
 import tensorflow as tf
 import random as rand
 import PIL
@@ -6,17 +5,30 @@ import numpy as np
 import tkinter as tk
 from tkinter import *
 
+class Person:
+    def __init__(self, name,ID):
+        self.name = name
+        self.ID = ID
+        self.Male = 0
+        self.Eyeglasses = 0
+        self.Wearing_hat = 0
+        self.Smiling = 0
+        self.Blond_Hair = 0
 
-def test(fname,model):
+class Attribute:
+    def __init__(self, name):
+        self.name = name
+        self.num  = 0
+
+def classify(fname,model):
 
     iname = str(fname)
     img = PIL.Image.open(iname)
     img = np.asarray(img)/255.   
 
     x = img.reshape((1,) + img.shape)
-    Prob = newModel.predict(x)
+    Prob = model.predict_step(tf.convert_to_tensor(x))
     attrResult = 0
-    result = 0
     if np.argmax(Prob) == 1:
         attrResult = 1
     else:
@@ -24,24 +36,38 @@ def test(fname,model):
     
     return attrResult
 
-# Image filenames
-Nathaniel = 'IMG_5970.jpg'
-Sarah = 'IMG_8114.jpg'
-David = 'David.jpg'
-Hannah = 'test.jpg'
-PICTURES = [Nathaniel,Sarah,David,Hannah]
-pictures = [Nathaniel,Sarah,David,Hannah]
+# People objects
+nathaniel = Person('Nathaniel')
+sarah = Person('Sarah')
+lin = Person('Lin')
+xinran = Person('Xinran')
+david = Person('David')
+mom = Person("Sarah's Mom")
+roomate = Person("Sarah's Roomate")
+nick = Person('Nick')
+people = [nathaniel,sarah,lin,xinran,david,mom,roommate,nick]
 
 # Attributes
-ATTR= ['Male','Eyeglasses','Wearing_Hat']
+ATTR = [Attribute('Male'),Attribute('Eyeglasses'),Attribute('Wearing_Hat'),Attribute('Smiling'),Attribute('Blond_Hair')]
 
-# Colors for game background
-black = (0,0,0)
-white = (255,255,255)
-done = False
+# Classify each image
+
+for attr in ATTR:
+    # Load the model
+    print('Loading pretrained model, this will take a while (~30 sec to 1 min)')
+    # this can be speed up by only saving and loading the weights, maybe
+    newModel = newModel = loadModel(attr.name)
+    print('Model loaded')
+
+    for person in people:
+        result = classify(person.ID,newModel)
+        if result == 1:
+            attr.num += 1
+            setattr(person,attr.name,1)
 
 
 # Run the game board 
+done = False
 while not done:
 
     if len(pictures) == 1:
