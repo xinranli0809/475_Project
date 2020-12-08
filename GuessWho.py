@@ -12,106 +12,134 @@ from tkinter import font as tkfont
 main = tk.Tk()
 
 mframe = tk.Frame(main)
-mframe.pack() #row=0,column=0)
+mframe.grid(row=0,column=0)
+
+# specify where window will open (50 points to the left and 50 points down from the top-left corner)
+main.geometry("+50+50")
+
+# prevent player from resizing window 
+main.resizable(width=False,height=False)
 
 
-pushed = 0
+################################################################################################################################
+class Person:
+    def __init__(self, name, ID):
+        self.name = name
+        self.ID = ID
+        self.attribute_dict = dict()
+        # self.Male = 0
+        # self.Eyeglasses = 0
+        # self.Wearing_hat = 0
+        # self.Smiling = 0
+        # self.Blond_Hair = 0
 
-# Clear the main windows frame of all widgets
-def clearwin(event=None):
-    for child in mframe.winfo_children():
-        child.destroy()
-    mframe.pack_forget()
-    mframe.grid_forget
-
-def win1(event=None):
-    '''Create the main window'''
-    clearwin()
-
-    # define title font style 
-    title_font = tkfont.Font(family='Helvetica', size=30, weight="bold")
-
-    # define text at top of page 
-    label = tk.Label(text="Guess Who?", font=title_font)
-    label.pack(side="top", fill="x", pady=10)
-
-    # add game instructions 
-    # font
-    instructFont = tkfont.Font(family='Helvetica', size=12)
-    instructtext = "Instructions on how to play the game once we decide on those.. blah blah blah more stuff"
-    instructtext = instructtext + " and more and more and more"
-    instructlabel = tk.Label(text=instructtext,font=instructFont)
-    instructlabel.pack(pady=10)
-
-    # button to start the game, green background with white words 
-    # buton font 
-    buttonfont = tkfont.Font(family='Helvetica', size=12, weight="bold")
-    button = tk.Button(text="Begin Game", height=2, width=15,bg='#099412', fg='#ffffff',
-        command=win2,font=buttonfont)
-    button.pack(pady=10)
-
-    # add project and creators label 
-    botFont = tkfont.Font(family='Helvetica', size=11)
-    creatrlabel = tk.Label(text="Xinran Li, Lin Liu, Nathaniel Nyberg, Sarah Ziselman",font=botFont)
-    creatrlabel.pack(pady=15)
-    projlabel = tk.Label(text="ELEC_ENG_475: Machine Learning: Foundations, Applications, and Algorithms Final Project",font=botFont)
-    projlabel.pack()
+    def __repr__(self):
+        return self.name
 
 
+class Attribute:
+    def __init__(self, name):
+        self.name = name
+        self.num = 0
 
 
-def win2():
-    '''Create the second sub window'''
-    clearwin()
+def classify(fname, model):
+    iname = str(fname)
+    img = PIL.Image.open(iname)
+    img = np.asarray(img) / 255.
 
-    # define font style 
-    title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
+    x = img.reshape((1,) + img.shape)
+    Prob = model.predict_step(tf.convert_to_tensor(x))
+    attrResult = 0
+    if np.argmax(Prob) == 1:
+        attrResult = 1
+    else:
+        attrResult = 0
 
-    # load and place pictures 
-    loadAndPlacePics()
+    return attrResult
 
-    # text box where the computer will communicate with the player, scrolls so older messages will be higher up 
-    textbox = Label(height=10,width=30)
 
-    # put on grid 
-    textbox.grid(row=3, column=0,columnspan=2)
-    
-    #pushed = 0
-    # function that gives a value if the button has been pushed
-    def YesisPushed(pushed):
-        print("pushed")
-        #global pushed
-        msg = "Does your person have"
-        textbox["text"]=msg
-        pushed=1
-        
+################################################################################################################################
+# People objects
+nathaniel = Person('Nathaniel', 'Images/Nathaniel.jpg')
+nathaniel.attribute_dict['Male'] = 1
+nathaniel.attribute_dict['Eyeglasses'] = 0
+nathaniel.attribute_dict['Wearing_hat'] = 1
+nathaniel.attribute_dict['Smiling'] = 1
+nathaniel.attribute_dict['Blond_Hair'] = 0
 
-    # function that gives a value if the button has been pushed
-    def NoisPushed(pushed):
-        print("pushed")
-        #global pushed
-        msg = "No"
-        textbox["text"]=msg
-        pushed=1
-        
+sarah = Person('Sarah', 'Images/Sarah.jpg')
+sarah.attribute_dict['Male'] = 0
+sarah.attribute_dict['Eyeglasses'] = 0
+sarah.attribute_dict['Wearing_hat'] = 0
+sarah.attribute_dict['Smiling'] = 1
+sarah.attribute_dict['Blond_Hair'] = 1
 
-    
+lin = Person('Lin', 'Images/Lin.jpg')
+lin.attribute_dict['Male'] = 0
+lin.attribute_dict['Eyeglasses'] = 0
+lin.attribute_dict['Wearing_hat'] = 1
+lin.attribute_dict['Smiling'] = 1
+lin.attribute_dict['Blond_Hair'] = 0
 
-    # buttons for yes and no response  
-    buttonfont = tkfont.Font(family='Helvetica', size=12, weight="bold")
+xinran = Person('Xinran', 'Images/Xinran.jpg')
+xinran.attribute_dict['Male'] = 1
+xinran.attribute_dict['Eyeglasses'] = 0
+xinran.attribute_dict['Wearing_hat'] = 0
+xinran.attribute_dict['Smiling'] = 0
+xinran.attribute_dict['Blond_Hair'] = 0
 
-    # yes button with green background and white text
-    yesbutton = tk.Button(main,text="Yes", height=1, width=10,bg='#099412', fg='#ffffff',font=buttonfont,command=lambda *args:YesisPushed(pushed))
-    yesbutton.grid(row=4,column=1,padx=10,pady=15,sticky="n")
+david = Person('David', 'Images/David.jpg')
+david.attribute_dict['Male'] = 1
+david.attribute_dict['Eyeglasses'] = 0
+david.attribute_dict['Wearing_hat'] = 0
+david.attribute_dict['Smiling'] = 0
+david.attribute_dict['Blond_Hair'] = 1
 
-    # no button with red background and white text 
-    nobutton = tk.Button(main,text="No", height=1, width=10,bg='#ab0a0a', fg='#ffffff',font=buttonfont,command=lambda *args:NoisPushed(pushed))
-    nobutton.grid(row=4,column=2,padx=10,pady=15,sticky="n")   
+ilene = Person('Ilene', 'Images/Ilene.jpg')
+ilene.attribute_dict['Male'] = 0
+ilene.attribute_dict['Eyeglasses'] = 1
+ilene.attribute_dict['Wearing_hat'] = 0
+ilene.attribute_dict['Smiling'] = 1
+ilene.attribute_dict['Blond_Hair'] = 0
 
-    #main.after(1000,win2)
-    #main.update_idletasks()
-    #main.update()
-    #main.mainloop()
+emily = Person('Emily', 'Images/Emily.jpg')
+emily.attribute_dict['Male'] = 0
+emily.attribute_dict['Eyeglasses'] = 1
+emily.attribute_dict['Wearing_hat'] = 0
+emily.attribute_dict['Smiling'] = 1
+emily.attribute_dict['Blond_Hair'] = 1
+
+nik = Person('Nik', 'Images/Nik.jpg')
+nik.attribute_dict['Male'] = 1
+nik.attribute_dict['Eyeglasses'] = 1
+nik.attribute_dict['Wearing_hat'] = 0
+nik.attribute_dict['Smiling'] = 0
+nik.attribute_dict['Blond_Hair'] = 0
+
+
+# people library that is unchanged, contains all the people in the game
+people_library = [nathaniel, sarah, lin, xinran, david, ilene, emily, nik]
+# player 1 (person)'s library of people
+player1_people = [nathaniel, sarah, lin, xinran, david, ilene, emily, nik]
+# player 2 (computer)'s library of people
+player2_people = [nathaniel, sarah, lin, xinran, david, ilene, emily, nik]
+# Attributes
+
+Male = Attribute('Male')
+Eyeglasses = Attribute('Eyeglasses')
+Wearing_hat = Attribute('Wearing_hat')
+Smiling = Attribute('Smiling')
+Blond_Hair = Attribute('Blond_Hair')
+
+# ATTR = [Male, Eyeglasses, Wearing_hat, Smiling, Blond_Hair]
+# player1_attributes = [Male, Eyeglasses, Wearing_hat, Smiling, Blond_Hair]
+# player2_attributes = [Male, Eyeglasses, Wearing_hat, Smiling, Blond_Hair]
+ATTR = ['Male', 'Eyeglasses', 'Wearing_hat', 'Smiling', 'Blond_Hair']
+player1_attributes = ['Male', 'Eyeglasses', 'Wearing_hat', 'Smiling', 'Blond_Hair']
+player2_attributes = ['Male', 'Eyeglasses', 'Wearing_hat', 'Smiling', 'Blond_Hair']
+
+################################################################################################################################
 
 # function to load the pictures and place them in a 2x4 grid
 def loadAndPlacePics(): 
@@ -183,30 +211,176 @@ def loadAndPlacePics():
     img8.grid(row=1, column=3, padx=5, pady=5)
     
 
+# function that gets called if the yes button is pushed
+def ifYesPushed(guess):
+    """
+    guessed_attribute : the attribute that player 2 guessed
+    """
 
+    # checks through player 2's list for people with the attribute
+    for p in player2_people:
+        if p.attribute_dict[guess] == 0:
+            player2_people.remove(p)
+        else:
+            pass
+
+    # player 2 (computer) looks for attribute with highest frequency
+    # creates empty dictionary to save # of images with attribute
+    att_dict = dict()
+    # loops through remaining attributes
+    for a in player2_attributes:
+        att_dict[a] = 0
+        # loops through remaining people
+        for b in player2_people:
+            if b.attribute_dict[a] == 1:
+                att_dict[a] += 1
+            else:
+                pass
+
+    max_att = max(att_dict, key = att_dict.get)
+    message = 'Does your person have the attribute, ' + max_att + '?'
+    player2_attributes.remove(max_att)
+    #pass
+    return message
+
+# function that gets called if the yes button is pushed
+def ifNoPushed(guess):
+    """
+    guessed_attribute : the attribute that player 2 guessed
+    """
+
+    # checks through player 2's list for people with the attribute
+    for p in player2_people:
+        if p.attribute_dict[guess] == 1:
+            player2_people.remove(p)
+        else:
+            pass
+
+    # player 2 (computer) looks for attribute with highest frequency
+    # creates empty dictionary to save # of images with attribute
+    att_dict = dict()
+    # loops through remaining attributes
+    for a in player2_attributes:
+        att_dict[a] = 0
+        # loops through remaining people
+        for b in player2_people:
+            if b.attribute_dict[a] == 1:
+                att_dict[a] += 1
+            else:
+                pass
+
+    max_att = max(att_dict, key = att_dict.get)
+    message = 'Does your person have the attribute, ' + max_att + '?'
+    player2_attributes.remove(max_att)
+    #pass
+    return message
+
+guessed_attribute = 'Male'
+
+
+################################################################################################################################
+# Clear the main windows frame of all widgets
+def clearwin():
+    for child in mframe.winfo_children():
+        child.destroy()
+    mframe.pack_forget()
+    mframe.grid_forget()
+        #child.pack_forget()
+        #child.forget()
+        #child.grid_forget
+
+def win1():
+    '''Create the main window'''
+    clearwin()
+
+    # define title font style 
+    title_font = tkfont.Font(family='Helvetica', size=30, weight="bold")
+
+    # define text at top of page 
+    label = tk.Label(text="Guess Who?", font=title_font)
+    label.grid(row=1,column=0) #(side="top", fill="x", pady=10)
+
+    # add game instructions 
+    # font
+    instructFont = tkfont.Font(family='Helvetica', size=12)
+    instructtext = "Instructions on how to play the game once we decide on those.. blah blah blah more stuff"
+    instructtext = instructtext + " and more and more and more"
+    instructlabel = tk.Label(text=instructtext,font=instructFont)
+    instructlabel.grid(row=2,column=0) #pack(pady=10)
+
+    # button to start the game, green background with white words 
+    # buton font 
+    buttonfont = tkfont.Font(family='Helvetica', size=12, weight="bold")
+    button = tk.Button(text="Begin Game", height=2, width=15,bg='#099412', fg='#ffffff',
+        command=win2,font=buttonfont)
+    button.grid(row=3,column=0) #pack(pady=10)
+
+    # add project and creators label 
+    botFont = tkfont.Font(family='Helvetica', size=11)
+    creatrlabel = tk.Label(text="Xinran Li, Lin Liu, Nathaniel Nyberg, Sarah Ziselman",font=botFont)
+    creatrlabel.grid(row=4,column=0) #pack(pady=15)
+    projlabel = tk.Label(text="ELEC_ENG_475: Machine Learning: Foundations, Applications, and Algorithms Final Project",font=botFont)
+    projlabel.grid(row=5,column=0) #pack()
+
+# create game window
+def win2():
+    clearwin()
+
+    # define font style for the questions
+    qfont = tkfont.Font(family='Helvetica', size=12)
+
+    # load and place pictures 
+    loadAndPlacePics()
+
+    # text box where the computer will communicate with the player, scrolls so older messages will be higher up 
+    textbox = Label(height=8,width=100)
+
+    # put on grid 
+    textbox.grid(row=3, column=0,columnspan=4)
+
+    # initial question 
+    textbox["text"] = "Choose your person"
+    textbox["font"] = qfont
+
+
+    ###########################################################################################################################################
+    # function that gives a value if the button has been pushed
+    def YesisPushed():
+        #print("pushed")
+        msg=ifYesPushed(guessed_attribute)
+
+        # wait a 0.25second before displaying the new question 
+        main.after(250)
+        textbox["text"]=msg
+        textbox["font"]=qfont
         
 
-        #button = tk.Button(self, text="Go to the start page", command=lambda: controller.show_frame("StartPage"))
-        #button.pack()
+    # function that gives a value if the button has been pushed
+    def NoisPushed():
+        #print("pushed")
+        msg = ifNoPushed(guessed_attribute)
 
-# test class with functions related to the computer player 
-class Test():
-    def getMessage(): 
-        return "hi"
-    
+        # wait a 0.25second before displaying the new question 
+        main.after(250)
+        textbox["text"]=msg
+        textbox["font"]=qfont
+    ############################################################################################################################################
 
 
-gameInProgress = True
+    # buttons for yes and no response  
+    buttonfont = tkfont.Font(family='Helvetica', size=12, weight="bold")
+
+    # yes button with green background and white text
+    yesbutton = tk.Button(main,text="Yes", height=1, width=10,bg='#099412', fg='#ffffff',font=buttonfont,command=YesisPushed)
+    yesbutton.grid(row=4,column=1,padx=10,pady=15,sticky="n")
+
+    # no button with red background and white text 
+    nobutton = tk.Button(main,text="No", height=1, width=10,bg='#ab0a0a', fg='#ffffff',font=buttonfont,command=NoisPushed)
+    nobutton.grid(row=4,column=2,padx=10,pady=15,sticky="n")   
+
 win2()
 main.mainloop()
 
-#while gameInProgress:
-#    win2()
-    #while True:
-        #win2()
-        #main.update_idletasks()
-    #    main.update()
-    #main.mainloop()
 
 '''
 class GameWindow(tk.Tk):
@@ -441,77 +615,4 @@ if __name__ == "__main__":
     game.mainloop()
 
 
-'''
-'''
-def test(fname,model):
-
-    iname = str(fname)
-    img = PIL.Image.open(iname)
-    img = np.asarray(img)/255.   
-
-    x = img.reshape((1,) + img.shape)
-    Prob = newModel.predict(x)
-    attrResult = 0
-    result = 0
-    if np.argmax(Prob) == 1:
-        attrResult = 1
-    else:
-        attrResult = 0
-    
-    return attrResult
-
-# Image filenames
-Nathaniel = 'IMG_5970.jpg'
-Sarah = 'IMG_8114.jpg'
-David = 'David.jpg'
-Hannah = 'test.jpg'
-PICTURES = [Nathaniel,Sarah,David,Hannah]
-pictures = [Nathaniel,Sarah,David,Hannah]
-
-# Attributes
-ATTR= ['Male','Eyeglasses','Wearing_Hat']
-
-# Colors for game background
-black = (0,0,0)
-white = (255,255,255)
-done = False
-
-
-# Run the game board 
-while not done:
-
-    if len(pictures) == 1:
-        print('The person is ' + pictures[0])
-        done = True
-    elif len(ATTR) == 0:
-        num = rand.choice(range(len(pictures)))
-        pic = pictures.pop(num)
-        text = input('Is the person ' + pic + '?' + '(y/n)\n')
-        if text == 'y':
-            print('The person is ' + pic)
-        else:
-            continue
-        
-
-    # Select the Attribute
-    num = rand.choice(range(len(ATTR)))
-    attribute = ATTR.pop(num)
-
-    print('Loading pretrained model, this will take a while (~30 sec to 1 min)')
-    # this can be speed up by only saving and loading the weights, maybe
-    newModel = tf.keras.models.load_model('./' + attribute,compile=False)
-    print('Model loaded')
-
-    # Que the user for clue
-    text = input('Does the user have the attribute ' + attribute + '(y/n):\n')
-    if text == 'y':
-        ans = 1
-    else:
-        ans = 0
-
-    # Evaluate each picture
-    for pic in pictures:
-        result = test(pic,newModel)
-        if ans != result:
-            pictures.remove(pic)
 '''
