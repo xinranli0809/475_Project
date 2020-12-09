@@ -11,6 +11,9 @@ from tkinter import font as tkfont
 
 main = tk.Tk()
 
+# name the window
+main.title("Guess Who Game")
+
 mframe = tk.Frame(main)
 mframe.grid(row=0,column=0)
 
@@ -20,6 +23,11 @@ main.geometry("+50+50")
 # prevent player from resizing window 
 main.resizable(width=False,height=False)
 
+# keep track if the game started or not, will be 1 if it's started 
+gamestart = 0
+
+# for the first window to completely delete it 
+win1labels = []
 
 ################################################################################################################################
 class Person:
@@ -220,6 +228,8 @@ def ifNoPushed(guess):
     #pass
     return message
 
+
+# first attribute to be guessed 
 guessed_attribute = 'Male'
 
 
@@ -227,12 +237,14 @@ guessed_attribute = 'Male'
 # Clear the main windows frame of all widgets
 def clearwin():
     for child in mframe.winfo_children():
+        child.grid_remove()
         child.destroy()
+    for l in win1labels:
+        l.destroy()
+        
     mframe.pack_forget()
     mframe.grid_forget()
-        #child.pack_forget()
-        #child.forget()
-        #child.grid_forget
+
 
 def win1():
     '''Create the main window'''
@@ -244,14 +256,16 @@ def win1():
     # define text at top of page 
     label = tk.Label(text="Guess Who?", font=title_font)
     label.grid(row=1,column=0) #(side="top", fill="x", pady=10)
+    win1labels.append(label)
 
     # add game instructions 
     # font
-    instructFont = tkfont.Font(family='Helvetica', size=12)
-    instructtext = "Instructions on how to play the game once we decide on those.. blah blah blah more stuff"
-    instructtext = instructtext + " and more and more and more"
+    instructFont = tkfont.Font(family='Helvetica', size=14)
+    instructtext = "How to Play the Game:" +'\n'
+    instructtext = instructtext + "Add instructions once we decide if it's the computer guessing or we are going back and forth"
     instructlabel = tk.Label(text=instructtext,font=instructFont)
-    instructlabel.grid(row=2,column=0) #pack(pady=10)
+    instructlabel.grid(row=2,column=0,pady=20,padx=15)
+    win1labels.append(instructlabel)
 
     # button to start the game, green background with white words 
     # buton font 
@@ -263,9 +277,11 @@ def win1():
     # add project and creators label 
     botFont = tkfont.Font(family='Helvetica', size=11)
     creatrlabel = tk.Label(text="Xinran Li, Lin Liu, Nathaniel Nyberg, Sarah Ziselman",font=botFont)
-    creatrlabel.grid(row=4,column=0) #pack(pady=15)
+    creatrlabel.grid(row=4,column=0,pady=5)
+    win1labels.append(creatrlabel)
     projlabel = tk.Label(text="ELEC_ENG_475: Machine Learning: Foundations, Applications, and Algorithms Final Project",font=botFont)
-    projlabel.grid(row=5,column=0) #pack()
+    projlabel.grid(row=5,column=0,pady=10) 
+    win1labels.append(projlabel)
 
 
 ###########################################################################################################################################
@@ -285,7 +301,7 @@ def win2():
     textbox.grid(row=3, column=0,columnspan=4)
 
     # initial question 
-    textbox["text"] = "Choose your person"
+    textbox["text"] = "Choose your person and click on their image"
     textbox["font"] = qfont
 
     ###########################################################################################################################################
@@ -293,86 +309,123 @@ def win2():
     def loadAndPlacePics(): 
         # load in the pictures and resize them 
         pic1 = PIL.Image.open("Images/David.jpg")
-        pic1 = pic1.resize((170,252), PIL.Image.ANTIALIAS)
+        #pic1 = pic1.resize((170,252), PIL.Image.ANTIALIAS)
         render1 = PIL.ImageTk.PhotoImage(pic1)
 
         pic2 = PIL.Image.open("Images/Lin.jpg")
-        pic2 = pic2.resize((170,252), PIL.Image.ANTIALIAS)
+        #pic2 = pic2.resize((170,252), PIL.Image.ANTIALIAS)
         render2 = PIL.ImageTk.PhotoImage(pic2)
 
         pic3 = PIL.Image.open("Images/Mom.jpg")
-        pic3 = pic3.resize((170,252), PIL.Image.ANTIALIAS)
+        #pic3 = pic3.resize((170,252), PIL.Image.ANTIALIAS)
         render3 = PIL.ImageTk.PhotoImage(pic3)
 
         pic4 = PIL.Image.open("Images/Nathaniel.jpg")
-        pic4 = pic4.resize((170,252), PIL.Image.ANTIALIAS)
+        #pic4 = pic4.resize((170,252), PIL.Image.ANTIALIAS)
         render4 = PIL.ImageTk.PhotoImage(pic4)
 
         pic5 = PIL.Image.open("Images/Nick.jpg")
-        pic5 = pic5.resize((170,252), PIL.Image.ANTIALIAS)
+        #pic5 = pic5.resize((170,252), PIL.Image.ANTIALIAS)
         render5 = PIL.ImageTk.PhotoImage(pic5)
 
         pic6 = PIL.Image.open("Images/Roomate.jpg")
-        pic6 = pic6.resize((170,252), PIL.Image.ANTIALIAS)
+        #pic6 = pic6.resize((170,252), PIL.Image.ANTIALIAS)
         render6 = PIL.ImageTk.PhotoImage(pic6)
 
         pic7 = PIL.Image.open("Images/Sarah.jpg")
-        pic7 = pic7.resize((170,252), PIL.Image.ANTIALIAS)
+        #pic7 = pic7.resize((170,252), PIL.Image.ANTIALIAS)
         render7 = PIL.ImageTk.PhotoImage(pic7)
 
         pic8 = PIL.Image.open("Images/Xinran.jpg")
-        pic8 = pic8.resize((170,252), PIL.Image.ANTIALIAS)
+        #pic8 = pic8.resize((170,252), PIL.Image.ANTIALIAS)
         render8 = PIL.ImageTk.PhotoImage(pic8)
+
+        xpic = PIL.Image.open("Images/x.jpg")
+        #xpic = xpic.resize((170,252), PIL.Image.ANTIALIAS)
+        xrender = PIL.ImageTk.PhotoImage(xpic)
         
 
         # callback functions for all picture buttons 
         def p1Push():
-            # wait a 0.25second before displaying the message
-            main.after(250)
-            textbox["text"]="You have chosen David. Push Yes to start the game or choose another person"
-            textbox["font"]=qfont
+            # take picture away
+            if gamestart==1:
+                img1['image']=xrender
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You have chosen David. Push Yes to start the game or choose another person"
+                textbox["font"]=qfont
+
 
         def p2Push():
-            # wait a 0.25second before displaying the message
-            main.after(250)
-            textbox["text"]="You have chosen Lin. Push Yes to start the game or choose another person"
-            textbox["font"]=qfont
+            # take picture away
+            if gamestart==1:
+                img2['image']=xrender
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You have chosen Lin. Push Yes to start the game or choose another person"
+                textbox["font"]=qfont
 
         def p3Push():
-            # wait a 0.25second before displaying the message
-            main.after(250)
-            textbox["text"]="You have chosen Ilene. Push Yes to start the game or choose another person"
-            textbox["font"]=qfont
+            # take picture away
+            if gamestart==1:
+                img3['image']=xrender
+            else:
+                 # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You have chosen Ilene. Push Yes to start the game or choose another person"
+                textbox["font"]=qfont
 
         def p4Push():
-            # wait a 0.25second before displaying the message
-            main.after(250)
-            textbox["text"]="You have chosen Nathaniel. Push Yes to start the game or choose another person"
-            textbox["font"]=qfont
+            # take picture away
+            if gamestart==1:
+                img4['image']=xrender
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You have chosen Nathaniel. Push Yes to start the game or choose another person"
+                textbox["font"]=qfont
 
         def p5Push():
-            # wait a 0.25second before displaying the message
-            main.after(250)
-            textbox["text"]="You have chosen Nik. Push Yes to start the game or choose another person"
-            textbox["font"]=qfont
+            # take picture away
+            if gamestart==1:
+                img5['image']=xrender
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You have chosen Nik. Push Yes to start the game or choose another person"
+                textbox["font"]=qfont
 
         def p6Push():
-            # wait a 0.25second before displaying the message
-            main.after(250)
-            textbox["text"]="You have chosen Emily. Push Yes to start the game or choose another person"
-            textbox["font"]=qfont
+            # take picture away
+            if gamestart==1:
+                img6['image']=xrender
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You have chosen Emily. Push Yes to start the game or choose another person"
+                textbox["font"]=qfont
 
         def p7Push():
-            # wait a 0.25second before displaying the message
-            main.after(250)
-            textbox["text"]="You have chosen Sarah. Push Yes to start the game or choose another person"
-            textbox["font"]=qfont
+            # take picture away
+            if gamestart==1:
+                img7['image']=xrender
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You have chosen Sarah. Push Yes to start the game or choose another person"
+                textbox["font"]=qfont
 
         def p8Push():
-            # wait a 0.25second before displaying the message
-            main.after(250)
-            textbox["text"]="You have chosen Xinran. Push Yes to start the game or choose another person"
-            textbox["font"]=qfont
+            # take picture away
+            if gamestart==1:
+                img8['image']=xrender
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You have chosen Xinran. Push Yes to start the game or choose another person"
+                textbox["font"]=qfont
 
 
         # make images into buttons and place the images on a 2x4 grid with borders along x and y to space out the pictures 
@@ -416,6 +469,11 @@ def win2():
     # function that gives a value if the button has been pushed
     def YesisPushed():
         #print("pushed")
+
+        # game has started the first time yes is pushed
+        global gamestart
+        gamestart = 1
+
         msg=ifYesPushed(guessed_attribute)
 
         # wait a 0.25second before displaying the new question 
@@ -447,6 +505,6 @@ def win2():
     nobutton = tk.Button(main,text="No", height=1, width=10,bg='#ab0a0a', fg='#ffffff',font=buttonfont,command=NoisPushed)
     nobutton.grid(row=4,column=2,padx=10,pady=15,sticky="n")   
 
-win2()
+win1()
 main.mainloop()
 
