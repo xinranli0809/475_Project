@@ -431,7 +431,9 @@ def win1():
     # font
     instructFont = tkfont.Font(family='Century Gothic', size=14)
     instructtext = "How to Play the Game:" +'\n'
-    instructtext = instructtext + "Add instructions once we decide if it's the computer guessing or we are going back and forth"
+    instructtext = instructtext + "Just like the classic Guess Who Game." +'\n'
+    instructtext = instructtext+ "You will pick a person by clicking on their picture and the computer will randomly pick a person." +'\n'
+    instructtext = instructtext + "At the very end click on one of the names to guess the computer's person. Have fun!"
     instructlabel = tk.Label(text=instructtext,font=instructFont)
     instructlabel.grid(row=2,column=0,pady=20,padx=15)
     win1labels.append(instructlabel)
