@@ -26,8 +26,12 @@ main.resizable(width=False,height=False)
 # keep track if the game started or not, will be 1 if it's started 
 gamestart = 0
 
+# see if the computer guessed your person correctly, =1 will check 
+checkguess = 0
+
 # for the first window to completely delete it 
 win1labels = []
+
 
 ################################################################################################################################
 class Person:
@@ -35,15 +39,9 @@ class Person:
         self.name = name
         self.ID = ID
         self.attribute_dict = dict()
-        # self.Male = 0
-        # self.Eyeglasses = 0
-        # self.Wearing_hat = 0
-        # self.Smiling = 0
-        # self.Blond_Hair = 0
 
     def __repr__(self):
         return self.name
-
 
 class Attribute:
     def __init__(self, name):
@@ -101,7 +99,7 @@ david = Person('David', 'Images/David.jpg')
 david.attribute_dict['Male'] = 1
 david.attribute_dict['Eyeglasses'] = 0
 david.attribute_dict['Wearing_hat'] = 0
-david.attribute_dict['Smiling'] = 0
+david.attribute_dict['Smiling'] = 1
 david.attribute_dict['Blond_Hair'] = 1
 
 ilene = Person('Ilene', 'Images/Ilene.jpg')
@@ -132,106 +130,206 @@ people_library = [nathaniel, sarah, lin, xinran, david, ilene, emily, nik]
 player1_people = [nathaniel, sarah, lin, xinran, david, ilene, emily, nik]
 # player 2 (computer)'s library of people
 player2_people = [nathaniel, sarah, lin, xinran, david, ilene, emily, nik]
-# Attributes
 
-Male = Attribute('Male')
-Eyeglasses = Attribute('Eyeglasses')
-Wearing_hat = Attribute('Wearing_hat')
-Smiling = Attribute('Smiling')
-Blond_Hair = Attribute('Blond_Hair')
-
-# ATTR = [Male, Eyeglasses, Wearing_hat, Smiling, Blond_Hair]
-# player1_attributes = [Male, Eyeglasses, Wearing_hat, Smiling, Blond_Hair]
-# player2_attributes = [Male, Eyeglasses, Wearing_hat, Smiling, Blond_Hair]
-ATTR = ['Male', 'Eyeglasses', 'Wearing_hat', 'Smiling', 'Blond_Hair']
 player1_attributes = ['Male', 'Eyeglasses', 'Wearing_hat', 'Smiling', 'Blond_Hair']
 player2_attributes = ['Male', 'Eyeglasses', 'Wearing_hat', 'Smiling', 'Blond_Hair']
 
+# computer randomly chooses a person 
+player2_person = rand.choice(people_library)
 
 ###########################################################################################################################################
 # function that gets called if the yes button is pushed
-def ifYesPushed(guess):
-    """
-    guessed_attribute : the attribute that player 2 guessed
-    """
+def ifYesPushed(p_list, a_list, guess):
+    p_list_new = []
+    if len(p_list) == 1:
+        # check if guess is correct 
+        global checkguess
+        checkguess = 1
 
-    # if there is one more person in player 2's list
-    if len(player2_people) == 1:
-        message = 'Is your person ' + player2_people[0].name + '?'
-    # if there are no more attributes left to guess
-    elif len(player2_attributes) == 0:
-        message = 'Is your person ' + rand.choice(player2_people[0].name + '?')
+        p_list_new.append(p_list[0])
+        message = 'Is your person ' + p_list[0].name + '?'
+    elif len(a_list) == 0:
+        message = 'Is your person ' + rand.choice(p_list).name + '?'
     else:
-        # checks through player 2's list for people with the attribute
-        for p in player2_people:
-            if p.attribute_dict[guess] == 0:
-                player2_people.remove(p)
+        for person in p_list:
+            if person.attribute_dict[guess] == 1:
+                p_list_new.append(person)
             else:
                 pass
 
-        # player 2 (computer) looks for attribute with highest frequency
-        # creates empty dictionary to save # of images with attribute
         att_dict = dict()
-        # loops through remaining attributes
-        for a in player2_attributes:
-            att_dict[a] = 0
-            # loops through remaining people
-            for b in player2_people:
-                if b.attribute_dict[a] == 1:
-                    att_dict[a] += 1
+        for attribute in a_list:
+            att_dict[attribute] = 0
+            for p in p_list_new:
+                if p.attribute_dict[attribute] == 1:
+                    att_dict[attribute] += 1
                 else:
                     pass
 
         max_att = max(att_dict, key=att_dict.get)
-        message = 'Does your person have the attribute, ' + max_att + '?'
-        player2_attributes.remove(max_att)
-    #pass
+        a_list.remove(max_att)
+        message = 'Does your person have the attribute ' + max_att + '?'
+
+    #print(message)
+    #return p_list_new, a_list
     return message
 
-# function that gets called if the yes button is pushed
-def ifNoPushed(guess):
-    """
-    guessed_attribute : the attribute that player 2 guessed
-    """
 
-    # if there is one more person in player 2's list
-    if len(player2_people) == 1:
-        message = 'Is your person ' + player2_people[0].name + '?'
-    # if there are no more attributes left to guess
-    elif len(player2_attributes) == 0:
-        message = 'Is your person ' + rand.choice(player2_people[0].name + '?')
+# function that gets called if the yes button is pushed
+def ifNoPushed(p_list, a_list, guess):
+    p_list_new = []
+    if len(p_list) == 1:
+        p_list_new.append(p_list[0])
+        message = 'Is your person ' + p_list[0].name + '?'
+    elif len(a_list) == 0:
+        message = 'Is your person ' + rand.choice(p_list).name + '?'
     else:
-        # checks through player 2's list for people with the attribute
-        for p in player2_people:
-            if p.attribute_dict[guess] == 1:
-                player2_people.remove(p)
+        for person in p_list:
+            if person.attribute_dict[guess] == 0:
+                p_list_new.append(person)
             else:
                 pass
 
-        # player 2 (computer) looks for attribute with highest frequency
-        # creates empty dictionary to save # of images with attribute
         att_dict = dict()
-        # loops through remaining attributes
-        for a in player2_attributes:
-            att_dict[a] = 0
-            # loops through remaining people
-            for b in player2_people:
-                if b.attribute_dict[a] == 1:
-                    att_dict[a] += 1
+        for attribute in a_list:
+            att_dict[attribute] = 0
+            for p in p_list_new:
+                if p.attribute_dict[attribute] == 1:
+                    att_dict[attribute] += 1
                 else:
                     pass
 
         max_att = max(att_dict, key=att_dict.get)
-        message = 'Does your person have the attribute, ' + max_att + '?'
-        player2_attributes.remove(max_att)
+        a_list.remove(max_att)
+        message = 'Does your person have the attribute ' + max_att + '?'
+
     #print(message)
-    #pass
+    #return p_list_new, a_list
     return message
 
 
 # first attribute to be guessed 
-guessed_attribute = 'Male'
+guess = 'Male'
 
+def ifMale(p2_person, p_list):
+    """
+    p2_person: player 2 (computer)'s person
+    p_list : list of people that player 2 can potentially have
+    """
+    p_list_new = []
+    if p2_person.attribute_dict['Male'] == 1:
+        message = 'Yes, my person is male'
+        for person in p_list:
+            if person.attribute_dict['Male'] == 1:
+                p_list_new.append(person)
+            else:
+                pass
+    else:
+        message = 'No, my person is female'
+        for person in p_list:
+            if person.attribute_dict['Male'] == 0:
+                p_list_new.append(person)
+            else:
+                pass
+    #print(message)
+    #return p_list_new
+    return message
+
+def ifEyeglasses(p2_person, p_list):
+    """
+    p2_person: player 2 (computer)'s person
+    p_list : list of people that player 2 can potentially have
+    """
+    p_list_new = []
+    if p2_person.attribute_dict['Eyeglasses'] == 1:
+        message = 'Yes, my person is wearing eyeglasses'
+        for person in p_list:
+            if person.attribute_dict['Eyeglasses'] == 1:
+                p_list_new.append(person)
+            else:
+                pass
+    else:
+        message = 'No, my person is not wearing eyeglasses'
+        for person in p_list:
+            if person.attribute_dict['Eyeglasses'] == 0:
+                p_list_new.append(person)
+            else:
+                pass
+    #print(message)
+    #return p_list_new
+    return message
+
+def ifHat(p2_person, p_list):
+    """
+    p2_person: player 2 (computer)'s person
+    p_list : list of people that player 2 can potentially have
+    """
+    p_list_new = []
+    if p2_person.attribute_dict['Wearing_hat'] == 1:
+        message = 'Yes, my person is wearing a hat'
+        for person in p_list:
+            if person.attribute_dict['Wearing_hat'] == 1:
+                p_list_new.append(person)
+            else:
+                pass
+    else:
+        message = 'No, my person is not wearing a hat'
+        for person in p_list:
+            if person.attribute_dict['Wearing_hat'] == 0:
+                p_list_new.append(person)
+            else:
+                pass
+    #print(message)
+    #return p_list_new
+    return message
+
+def ifSmiling(p2_person, p_list):
+    """
+    p2_person: player 2 (computer)'s person
+    p_list : list of people that player 2 can potentially have
+    """
+    p_list_new = []
+    if p2_person.attribute_dict['Smiling'] == 1:
+        message = 'Yes, my person is smiling'
+        for person in p_list:
+            if person.attribute_dict['Smiling'] == 1:
+                p_list_new.append(person)
+            else:
+                pass
+    else:
+        message = 'No, my person is not smiling'
+        for person in p_list:
+            if person.attribute_dict['Smiling'] == 0:
+                p_list_new.append(person)
+            else:
+                pass
+    #print(message)
+    #return p_list_new
+    return message
+
+def ifBlonde(p2_person, p_list):
+    """
+    p2_person: player 2 (computer)'s person
+    p_list : list of people that player 2 can potentially have
+    """
+    p_list_new = []
+    if p2_person.attribute_dict['Blond_Hair'] == 1:
+        message = 'Yes, my person has blonde hair'
+        for person in p_list:
+            if person.attribute_dict['Blond_Hair'] == 1:
+                p_list_new.append(person)
+            else:
+                pass
+    else:
+        message = 'No, my person does not have blonde hair'
+        for person in p_list:
+            if person.attribute_dict['Blond_Hair'] == 0:
+                p_list_new.append(person)
+            else:
+                pass
+    #print(message)
+    #return p_list_new
+    return message
 
 ###########################################################################################################################################
 # Clear the main windows frame of all widgets
@@ -275,13 +373,18 @@ def win1():
     button.grid(row=3,column=0) #pack(pady=10)
     win1labels.append(button)
 
+    # spacer to look nicer 
+    spacer1 = Label(text=" ")
+    spacer1.grid(row=4)
+
     # add project and creators label 
     botFont = tkfont.Font(family='Century Gothic', size=11)
     creatrlabel = tk.Label(text="Xinran Li, Lin Liu, Nathaniel Nyberg, Sarah Ziselman",font=botFont)
-    creatrlabel.grid(row=4,column=0,pady=5)
+    creatrlabel.grid(row=5,column=0,pady=5)
+
     win1labels.append(creatrlabel)
     projlabel = tk.Label(text="ELEC_ENG_475: Machine Learning: Foundations, Applications, and Algorithms Final Project",font=botFont)
-    projlabel.grid(row=5,column=0,pady=10) 
+    projlabel.grid(row=6,column=0,pady=10) 
     win1labels.append(projlabel)
 
 
@@ -370,6 +473,18 @@ def win2():
                 textbox["text"]="You have chosen David. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
 
+        def name1Push():
+            if player2_person==david: 
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are correct! I chose David."
+                textbox["font"]=qfont
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are wrong. I didn't chose David."
+                textbox["font"]=qfont               
+
 
         def p2Push():
             # take picture away
@@ -380,6 +495,18 @@ def win2():
                 main.after(250)
                 textbox["text"]="You have chosen Lin. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
+        
+        def name2Push():
+            if player2_person==lin: 
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are correct! I chose Lin."
+                textbox["font"]=qfont
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are wrong. I didn't chose Lin."
+                textbox["font"]=qfont   
 
         def p3Push():
             # take picture away
@@ -391,6 +518,18 @@ def win2():
                 textbox["text"]="You have chosen Ilene. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
 
+        def name3Push():
+            if player2_person==ilene: 
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are correct! I chose Ilene."
+                textbox["font"]=qfont
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are wrong. I didn't chose Ilene."
+                textbox["font"]=qfont   
+
         def p4Push():
             # take picture away
             if gamestart==1:
@@ -400,6 +539,18 @@ def win2():
                 main.after(250)
                 textbox["text"]="You have chosen Nathaniel. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
+
+        def name4Push():
+            if player2_person==nathaniel: 
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are correct! I chose Nathaniel."
+                textbox["font"]=qfont
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are wrong. I didn't chose Nathaniel."
+                textbox["font"]=qfont   
 
         def p5Push():
             # take picture away
@@ -411,6 +562,18 @@ def win2():
                 textbox["text"]="You have chosen Nik. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
 
+        def name5Push():
+            if player2_person==nik: 
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are correct! I chose Nik."
+                textbox["font"]=qfont
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are wrong. I didn't chose Nik."
+                textbox["font"]=qfont   
+
         def p6Push():
             # take picture away
             if gamestart==1:
@@ -420,6 +583,18 @@ def win2():
                 main.after(250)
                 textbox["text"]="You have chosen Emily. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
+
+        def name6Push():
+            if player2_person==emily: 
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are correct! I chose Emily."
+                textbox["font"]=qfont
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are wrong. I didn't chose Emily."
+                textbox["font"]=qfont   
 
         def p7Push():
             # take picture away
@@ -431,6 +606,18 @@ def win2():
                 textbox["text"]="You have chosen Sarah. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
 
+        def name7Push():
+            if player2_person==sarah: 
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are correct! I chose Sarah."
+                textbox["font"]=qfont
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are wrong. I didn't chose Sarah."
+                textbox["font"]=qfont   
+
         def p8Push():
             # take picture away
             if gamestart==1:
@@ -441,79 +628,75 @@ def win2():
                 textbox["text"]="You have chosen Xinran. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
 
+        def name8Push():
+            if player2_person==xinran: 
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are correct! I chose Xinran."
+                textbox["font"]=qfont
+            else:
+                # wait a 0.25second before displaying the message
+                main.after(250)
+                textbox["text"]="You are wrong. I didn't chose Xinran."
+                textbox["font"]=qfont   
+
 
         # make images into buttons and place the images on a 2x4 grid with borders along x and y to space out the pictures 
         img1 = tk.Button(leftFrame,image=render1,command=p1Push)
         img1.image = render1
         img1.grid(row=2, column=0, padx=5, pady=5)
         # label the picture 
-        it1 = Label(leftFrame)
+        it1 = tk.Button(leftFrame, text="David", font=attfont,command=name1Push)
         it1.grid(row=1, column=0)
-        it1["text"] = "David"
-        it1["font"] = attfont
 
         img2 = tk.Button(leftFrame,image=render2,command=p2Push)
         img2.image = render2
         img2.grid(row=2, column=1, padx=5, pady=5)
         # label the picture 
-        it2 = Label(leftFrame)
+        it2 = tk.Button(leftFrame, text="Lin", font=attfont,command=name2Push)
         it2.grid(row=1, column=1)
-        it2["text"] = "Lin"
-        it2["font"] = attfont
 
         img3 = tk.Button(leftFrame,image=render3,command=p3Push)
         img3.image = render3
         img3.grid(row=2, column=2, padx=5, pady=5)
         # label the picture 
-        it3 = Label(leftFrame)
+        it3 = tk.Button(leftFrame, text="Ilene", font=attfont,command=name3Push)
         it3.grid(row=1, column=2)
-        it3["text"] = "Ilene"
-        it3["font"] = attfont
 
         img4 = tk.Button(leftFrame,image=render4,command=p4Push)
         img4.image = render4
         img4.grid(row=2, column=3, padx=5, pady=5)
         # label the picture 
-        it4 = Label(leftFrame)
+        it4 = tk.Button(leftFrame, text="Nathaniel", font=attfont,command=name4Push)
         it4.grid(row=1, column=3)
-        it4["text"] = "Nathaniel"
-        it4["font"] = attfont
 
         img5 = tk.Button(leftFrame,image=render5,command=p5Push)
         img5.image = render5
         img5.grid(row=5, column=0, padx=5, pady=5)
         # label the picture 
-        it5 = Label(leftFrame)
+        it5 = tk.Button(leftFrame, text="Nik", font=attfont,command=name5Push)
         it5.grid(row=4, column=0)
-        it5["text"] = "Nik"
-        it5["font"] = attfont
 
         img6 = tk.Button(leftFrame,image=render6,command=p6Push)
         img6.image = render6
         img6.grid(row=5, column=1, padx=5, pady=5)
         # label the picture 
-        it6 = Label(leftFrame)
+        it6 = tk.Button(leftFrame, text="Emily", font=attfont,command=name6Push)
         it6.grid(row=4, column=1)
-        it6["text"] = "Emily"
-        it6["font"] = attfont
 
         img7 = tk.Button(leftFrame,image=render7,command=p7Push)
         img7.image = render7
         img7.grid(row=5, column=2, padx=5, pady=5)
         # label the picture 
-        it7 = Label(leftFrame)
+        it7 = tk.Button(leftFrame, text="Sarah", font=attfont,command=name7Push)
         it7.grid(row=4, column=2)
-        it7["text"] = "Sarah"
-        it7["font"] = attfont
         
         img8 = tk.Button(leftFrame,image=render8,command=p8Push)
         img8.image = render8
         img8.grid(row=5, column=3, padx=5, pady=5)
         # label the picture 
-        it8 = Label(leftFrame)
+        it8 = tk.Button(leftFrame, text="Xinran", font=attfont,command=name8Push)
         it8.grid(row=4, column=3)
-        it8["text"] = "Xinran"
-        it8["font"] = attfont
 
         spacer1 = Label(leftFrame)
         spacer1.grid(row=3)
@@ -531,14 +714,20 @@ def win2():
     # function that gives a value if the button has been pushed
     def YesisPushed():
         #print("pushed")
-
         # game has started the first time yes is pushed
         global gamestart
         gamestart = 1
 
-        msg=ifYesPushed(guessed_attribute)
+        # check if the computer guessed correctly 
+        if checkguess == 1:
+            textbox["text"] = "The computer guessed correctly"
+            textbox["font"]=qfont
+            # wait a second before displaying the new question 
+            main.after(1000)
 
-        # wait a 0.25second before displaying the new question 
+        msg=ifYesPushed(player2_people, player2_attributes, guess)
+
+        # wait 0.25second before displaying the new question 
         main.after(250)
         textbox["text"]=msg
         textbox["font"]=qfont
@@ -547,9 +736,16 @@ def win2():
     # function that gives a value if the button has been pushed
     def NoisPushed():
         #print("pushed")
-        msg = ifNoPushed(guessed_attribute)
+        # check if the computer guessed correctly 
+        if checkguess == 1:
+            textbox["text"] = "The computer guessed incorrectly"
+            textbox["font"]=qfont
+            # wait a second before displaying the new question 
+            main.after(1000)
 
-        # wait a 0.25second before displaying the new question 
+        msg = ifNoPushed(player2_people, player2_attributes, guess)
+
+        # wait 0.25second before displaying the new question 
         main.after(250)
         textbox["text"]=msg
         textbox["font"]=qfont
@@ -586,10 +782,22 @@ def win2():
         textbox["text"]="You have asked: Is the person a male?"
         textbox["font"]=qfont
 
+        msg = ifMale(player2_person, player1_people)
+        # wait 0.25second before displaying the new question 
+        main.after(250)
+        textbox["text"]=msg
+        textbox["font"]=qfont
+
     def smilePushed():
         # wait a 0.25second before displaying the message
         main.after(250)
         textbox["text"]="You have asked: Is the person smiling?"
+        textbox["font"]=qfont
+
+        msg = ifSmiling(player2_person, player1_people)
+        # wait 0.25second before displaying the new question 
+        main.after(250)
+        textbox["text"]=msg
         textbox["font"]=qfont
 
     def hatPushed():
@@ -598,10 +806,22 @@ def win2():
         textbox["text"]="You have asked: Is the person wearing a hat?"
         textbox["font"]=qfont
 
+        msg = ifHat(player2_person, player1_people)
+        # wait 0.25second before displaying the new question 
+        main.after(250)
+        textbox["text"]=msg
+        textbox["font"]=qfont
+
     def blondePushed():
         # wait a 0.25second before displaying the message
         main.after(250)
         textbox["text"]="You have asked: Does the person have blonde hair?"
+        textbox["font"]=qfont
+
+        msg = ifBlonde(player2_person, player1_people)
+        # wait 0.25second before displaying the new question 
+        main.after(250)
+        textbox["text"]=msg
         textbox["font"]=qfont
 
     def glassesPushed():
@@ -609,6 +829,13 @@ def win2():
         main.after(250)
         textbox["text"]="You have asked: Is the person wearing glasses?"
         textbox["font"]=qfont
+
+        msg = ifEyeglasses(player2_person, player1_people)
+        # wait 0.25second before displaying the new question 
+        main.after(250)
+        textbox["text"]=msg
+        textbox["font"]=qfont
+
 
     # attribute buttons  
     buttonfont = tkfont.Font(family='Century Gothic', size=10)
