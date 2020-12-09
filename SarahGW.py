@@ -174,28 +174,36 @@ def ifYesPushed(guess):
     guessed_attribute : the attribute that player 2 guessed
     """
 
-    # checks through player 2's list for people with the attribute
-    for p in player2_people:
-        if p.attribute_dict[guess] == 0:
-            player2_people.remove(p)
-        else:
-            pass
-
-    # player 2 (computer) looks for attribute with highest frequency
-    # creates empty dictionary to save # of images with attribute
-    att_dict = dict()
-    # loops through remaining attributes
-    for a in player2_attributes:
-        att_dict[a] = 0
-        # loops through remaining people
-        for b in player2_people:
-            if b.attribute_dict[a] == 1:
-                att_dict[a] += 1
+    # if there is one more person in player 2's list
+    if len(player2_people) == 1:
+        message = 'Is your person ' + player2_people[0].name + '?'
+    # if there are no more attributes left to guess
+    elif len(player2_attributes) == 0:
+        message = 'Is your person ' + rand.choice(player2_people[0].name + '?')
+    else:
+        # checks through player 2's list for people with the attribute
+        for p in player2_people:
+            if p.attribute_dict[guess] == 0:
+                player2_people.remove(p)
             else:
                 pass
 
-    max_att = max(att_dict, key = att_dict.get)
-    message = 'Does your person have the attribute, ' + max_att + '?'
+        # player 2 (computer) looks for attribute with highest frequency
+        # creates empty dictionary to save # of images with attribute
+        att_dict = dict()
+        # loops through remaining attributes
+        for a in player2_attributes:
+            att_dict[a] = 0
+            # loops through remaining people
+            for b in player2_people:
+                if b.attribute_dict[a] == 1:
+                    att_dict[a] += 1
+                else:
+                    pass
+
+        max_att = max(att_dict, key=att_dict.get)
+        message = 'Does your person have the attribute, ' + max_att + '?'
+        player2_attributes.remove(max_att)
     pass
 
 # function that gets called if the yes button is pushed
@@ -204,28 +212,37 @@ def ifNoPushed(guess):
     guessed_attribute : the attribute that player 2 guessed
     """
 
-    # checks through player 2's list for people with the attribute
-    for p in player2_people:
-        if p.attribute_dict[guess] == 1:
-            player2_people.remove(p)
-        else:
-            pass
-
-    # player 2 (computer) looks for attribute with highest frequency
-    # creates empty dictionary to save # of images with attribute
-    att_dict = dict()
-    # loops through remaining attributes
-    for a in player2_attributes:
-        att_dict[a] = 0
-        # loops through remaining people
-        for b in player2_people:
-            if b.attribute_dict[a] == 1:
-                att_dict[a] += 1
+    # if there is one more person in player 2's list
+    if len(player2_people) == 1:
+        message = 'Is your person ' + player2_people[0].name + '?'
+    # if there are no more attributes left to guess
+    elif len(player2_attributes) == 0:
+        message = 'Is your person ' + rand.choice(player2_people[0].name + '?')
+    else:
+        # checks through player 2's list for people with the attribute
+        for p in player2_people:
+            if p.attribute_dict[guess] == 1:
+                player2_people.remove(p)
             else:
                 pass
 
-    max_att = max(att_dict, key = att_dict.get)
-    message = 'Does your person have the attribute, ' + max_att + '?'
+        # player 2 (computer) looks for attribute with highest frequency
+        # creates empty dictionary to save # of images with attribute
+        att_dict = dict()
+        # loops through remaining attributes
+        for a in player2_attributes:
+            att_dict[a] = 0
+            # loops through remaining people
+            for b in player2_people:
+                if b.attribute_dict[a] == 1:
+                    att_dict[a] += 1
+                else:
+                    pass
+
+        max_att = max(att_dict, key=att_dict.get)
+        message = 'Does your person have the attribute, ' + max_att + '?'
+        player2_attributes.remove(max_att)
+    print(message)
     pass
 
 guessed_attribute = 'Male'
