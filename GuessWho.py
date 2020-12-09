@@ -489,7 +489,7 @@ def win2():
     textbox.grid(row=3, column=0,columnspan=4)
 
     # initial question 
-    textbox["text"] = "Choose your person and click on an attribute to the right to guess the computer's person"
+    textbox["text"] = "choose a person and click on their picture. Then click on an attribute to the right to guess the computer's person"
     textbox["font"] = qfont
 
     ###########################################################################################################################################
@@ -541,7 +541,7 @@ def win2():
             else:
                 # wait a 0.25second before displaying the message
                 main.after(250)
-                textbox["text"]="You have chosen David."
+                textbox["text"]="You have chosen David or click on another picture to choose someone else"
                 textbox["font"]=qfont
                 
                 pic1 = PIL.Image.open("Images/David.jpg")
@@ -551,7 +551,6 @@ def win2():
                 cimg.image = crend
                 cimg.grid(row=7, column=0, padx=5, pady=5)
             
-
         def name1Push():
             if player2_person==david: 
                 # wait a 0.25second before displaying the message
@@ -564,7 +563,6 @@ def win2():
                 textbox["text"]="You are wrong. I didn't chose David."
                 textbox["font"]=qfont               
 
-
         def p2Push():
             # take picture away
             if gamestart==1:
@@ -572,7 +570,7 @@ def win2():
             else:
                 # wait a 0.25second before displaying the message
                 main.after(250)
-                textbox["text"]="You have chosen Lin. Push Yes to start the game or choose another person"
+                textbox["text"]="You have chosen Lin or click on another picture to choose someone else"
                 textbox["font"]=qfont
 
                 pic1 = PIL.Image.open("Images/Lin.jpg")
@@ -601,7 +599,7 @@ def win2():
             else:
                  # wait a 0.25second before displaying the message
                 main.after(250)
-                textbox["text"]="You have chosen Ilene. Push Yes to start the game or choose another person"
+                textbox["text"]="You have chosen Ilene or click on another picture to choose someone else"
                 textbox["font"]=qfont
 
                 pic1 = PIL.Image.open("Images/Mom.jpg")
@@ -630,7 +628,7 @@ def win2():
             else:
                 # wait a 0.25second before displaying the message
                 main.after(250)
-                textbox["text"]="You have chosen Nathaniel. Push Yes to start the game or choose another person"
+                textbox["text"]="You have chosen Nathaniel or click on another picture to choose someone else"
                 textbox["font"]=qfont
 
                 pic1 = PIL.Image.open("Images/Nathaniel.jpg")
@@ -659,7 +657,7 @@ def win2():
             else:
                 # wait a 0.25second before displaying the message
                 main.after(250)
-                textbox["text"]="You have chosen Nik. Push Yes to start the game or choose another person"
+                textbox["text"]="You have chosen Nik or click on another picture to choose someone else"
                 textbox["font"]=qfont
 
                 pic1 = PIL.Image.open("Images/Nick.jpg")
@@ -688,7 +686,7 @@ def win2():
             else:
                 # wait a 0.25second before displaying the message
                 main.after(250)
-                textbox["text"]="You have chosen Emily. Push Yes to start the game or choose another person"
+                textbox["text"]="You have chosen Emily or click on another picture to choose someone else"
                 textbox["font"]=qfont
 
                 pic1 = PIL.Image.open("Images/Roomate.jpg")
@@ -717,7 +715,7 @@ def win2():
             else:
                 # wait a 0.25second before displaying the message
                 main.after(250)
-                textbox["text"]="You have chosen Sarah. Push Yes to start the game or choose another person"
+                textbox["text"]="You have chosen Sarah or click on another picture to choose someone else"
                 textbox["font"]=qfont
 
                 pic1 = PIL.Image.open("Images/Sarah.jpg")
@@ -746,7 +744,7 @@ def win2():
             else:
                 # wait a 0.25second before displaying the message
                 main.after(250)
-                textbox["text"]="You have chosen Xinran. Push Yes to start the game or choose another person"
+                textbox["text"]="You have chosen Xinran or click on another picture to choose someone else"
                 textbox["font"]=qfont
 
                 pic1 = PIL.Image.open("Images/Xinran.jpg")
