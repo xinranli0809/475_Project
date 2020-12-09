@@ -142,10 +142,6 @@ player2_person = rand.choice(people_library)
 def ifYesPushed(p_list, a_list, guess):
     p_list_new = []
     if len(p_list) == 1:
-        # check if guess is correct 
-        global checkguess
-        checkguess = 1
-
         p_list_new.append(p_list[0])
         message = 'Is your person ' + p_list[0].name + '?'
     elif len(a_list) == 0:
@@ -156,23 +152,10 @@ def ifYesPushed(p_list, a_list, guess):
                 p_list_new.append(person)
             else:
                 pass
-
-        att_dict = dict()
-        for attribute in a_list:
-            att_dict[attribute] = 0
-            for p in p_list_new:
-                if p.attribute_dict[attribute] == 1:
-                    att_dict[attribute] += 1
-                else:
-                    pass
-
-        max_att = max(att_dict, key=att_dict.get)
-        a_list.remove(max_att)
-        message = 'Does your person have the attribute ' + max_att + '?'
-
-    #print(message)
-    #return p_list_new, a_list
-    return message
+        message = 0
+    #if message:
+    #    print(message)
+    return message, p_list_new, a_list
 
 
 # function that gets called if the yes button is pushed
@@ -189,147 +172,235 @@ def ifNoPushed(p_list, a_list, guess):
                 p_list_new.append(person)
             else:
                 pass
-
-        att_dict = dict()
-        for attribute in a_list:
-            att_dict[attribute] = 0
-            for p in p_list_new:
-                if p.attribute_dict[attribute] == 1:
-                    att_dict[attribute] += 1
-                else:
-                    pass
-
-        max_att = max(att_dict, key=att_dict.get)
-        a_list.remove(max_att)
-        message = 'Does your person have the attribute ' + max_att + '?'
-
-    #print(message)
-    #return p_list_new, a_list
-    return message
+        message = 0
+    if message:
+        print(message)
+    return message, p_list_new, a_list
 
 
 # first attribute to be guessed 
 guess = 'Male'
 
-def ifMale(p2_person, p_list):
+def ifMale(p2_person, p1_list, p2_list, a2_list):
     """
     p2_person: player 2 (computer)'s person
-    p_list : list of people that player 2 can potentially have
+    p1_list : player 1's list of people that player 2 can potentially have
+    p2_list : player 2's list of people that player 1 can potentially have
+    a2_list : player 2's list of attributes that player 1's person can potentially have
     """
-    p_list_new = []
+    # computer responds yes or no
+    p1_list_new = []
     if p2_person.attribute_dict['Male'] == 1:
         message = 'Yes, my person is male'
-        for person in p_list:
+        # update player 1's list
+        for person in p1_list:
             if person.attribute_dict['Male'] == 1:
-                p_list_new.append(person)
+                p1_list_new.append(person)
             else:
                 pass
     else:
         message = 'No, my person is female'
-        for person in p_list:
+        # update player 1's list
+        for person in p1_list:
             if person.attribute_dict['Male'] == 0:
-                p_list_new.append(person)
+                p1_list_new.append(person)
             else:
                 pass
     #print(message)
-    #return p_list_new
-    return message
 
-def ifEyeglasses(p2_person, p_list):
+    # computer makes new guess
+    att_dict = dict()
+    for attribute in a2_list:
+        att_dict[attribute] = 0
+        for p in p2_list:
+            if p.attribute_dict[attribute] == 1:
+                att_dict[attribute] += 1
+            else:
+                pass
+    # computer asks if player 1's person has attribute with highest frequency
+    max_att = max(att_dict, key=att_dict.get)
+    a2_list.remove(max_att)
+    message2 = 'Does your person have the attribute ' + max_att + '?'
+    #print(message2)
+    return message, message2, p1_list_new, a2_list
+
+def ifEyeglasses(p2_person, p1_list, p2_list, a2_list):
     """
     p2_person: player 2 (computer)'s person
-    p_list : list of people that player 2 can potentially have
+    p1_list : player 1's list of people that player 2 can potentially have
+    p2_list : player 2's list of people that player 1 can potentially have
+    a2_list : player 2's list of attributes that player 1's person can potentially have
     """
-    p_list_new = []
+    # computer responds yes or no
+    p1_list_new = []
     if p2_person.attribute_dict['Eyeglasses'] == 1:
         message = 'Yes, my person is wearing eyeglasses'
-        for person in p_list:
+        # update player 1's list
+        for person in p1_list:
             if person.attribute_dict['Eyeglasses'] == 1:
-                p_list_new.append(person)
+                p1_list_new.append(person)
             else:
                 pass
     else:
         message = 'No, my person is not wearing eyeglasses'
-        for person in p_list:
+        # update player 1's list
+        for person in p1_list:
             if person.attribute_dict['Eyeglasses'] == 0:
-                p_list_new.append(person)
+                p1_list_new.append(person)
             else:
                 pass
     #print(message)
-    #return p_list_new
-    return message
 
-def ifHat(p2_person, p_list):
+    # computer makes new guess
+    att_dict = dict()
+    for attribute in a2_list:
+        att_dict[attribute] = 0
+        for p in p2_list:
+            if p.attribute_dict[attribute] == 1:
+                att_dict[attribute] += 1
+            else:
+                pass
+    # computer asks if player 1's person has attribute with highest frequency
+    max_att = max(att_dict, key=att_dict.get)
+    a2_list.remove(max_att)
+    message2 = 'Does your person have the attribute ' + max_att + '?'
+    #print(message2)
+
+    return message, message2, p1_list_new, a2_list
+
+def ifHat(p2_person, p1_list, p2_list, a2_list):
     """
     p2_person: player 2 (computer)'s person
-    p_list : list of people that player 2 can potentially have
+    p1_list : player 1's list of people that player 2 can potentially have
+    p2_list : player 2's list of people that player 1 can potentially have
+    a2_list : player 2's list of attributes that player 1's person can potentially have
     """
-    p_list_new = []
+    # computer responds yes or no
+    p1_list_new = []
     if p2_person.attribute_dict['Wearing_hat'] == 1:
         message = 'Yes, my person is wearing a hat'
-        for person in p_list:
+        # update player 1's list
+        for person in p1_list:
             if person.attribute_dict['Wearing_hat'] == 1:
-                p_list_new.append(person)
+                p1_list_new.append(person)
             else:
                 pass
     else:
         message = 'No, my person is not wearing a hat'
-        for person in p_list:
+        # update player 1's list
+        for person in p1_list:
             if person.attribute_dict['Wearing_hat'] == 0:
-                p_list_new.append(person)
+                p1_list_new.append(person)
             else:
                 pass
     #print(message)
-    #return p_list_new
-    return message
 
-def ifSmiling(p2_person, p_list):
+    # computer makes new guess
+    att_dict = dict()
+    for attribute in a2_list:
+        att_dict[attribute] = 0
+        for p in p2_list:
+            if p.attribute_dict[attribute] == 1:
+                att_dict[attribute] += 1
+            else:
+                pass
+    # computer asks if player 1's person has attribute with highest frequency
+    max_att = max(att_dict, key=att_dict.get)
+    a2_list.remove(max_att)
+    message2 = 'Does your person have the attribute ' + max_att + '?'
+    #print(message2)
+
+    return message, message2, p1_list_new, a2_list
+
+def ifSmiling(p2_person, p1_list, p2_list, a2_list):
     """
     p2_person: player 2 (computer)'s person
-    p_list : list of people that player 2 can potentially have
+    p1_list : player 1's list of people that player 2 can potentially have
+    p2_list : player 2's list of people that player 1 can potentially have
+    a2_list : player 2's list of attributes that player 1's person can potentially have
     """
-    p_list_new = []
+    # computer responds yes or no
+    p1_list_new = []
     if p2_person.attribute_dict['Smiling'] == 1:
         message = 'Yes, my person is smiling'
-        for person in p_list:
+        # update player 1's list
+        for person in p1_list:
             if person.attribute_dict['Smiling'] == 1:
-                p_list_new.append(person)
+                p1_list_new.append(person)
             else:
                 pass
     else:
         message = 'No, my person is not smiling'
-        for person in p_list:
+        # update player 1's list
+        for person in p1_list:
             if person.attribute_dict['Smiling'] == 0:
-                p_list_new.append(person)
+                p1_list_new.append(person)
             else:
                 pass
     #print(message)
-    #return p_list_new
-    return message
 
-def ifBlonde(p2_person, p_list):
+    # computer makes new guess
+    att_dict = dict()
+    for attribute in a2_list:
+        att_dict[attribute] = 0
+        for p in p2_list:
+            if p.attribute_dict[attribute] == 1:
+                att_dict[attribute] += 1
+            else:
+                pass
+    # computer asks if player 1's person has attribute with highest frequency
+    max_att = max(att_dict, key=att_dict.get)
+    a2_list.remove(max_att)
+    message2 = 'Does your person have the attribute ' + max_att + '?'
+    #print(message2)
+
+    return message, message2, p1_list_new, a2_list
+
+def ifBlonde(p2_person, p1_list, p2_list, a2_list):
     """
     p2_person: player 2 (computer)'s person
-    p_list : list of people that player 2 can potentially have
+    p1_list : player 1's list of people that player 2 can potentially have
+    p2_list : player 2's list of people that player 1 can potentially have
+    a2_list : player 2's list of attributes that player 1's person can potentially have
     """
-    p_list_new = []
+    # computer responds yes or no
+    p1_list_new = []
     if p2_person.attribute_dict['Blond_Hair'] == 1:
         message = 'Yes, my person has blonde hair'
-        for person in p_list:
+        # update player 1's list
+        for person in p1_list:
             if person.attribute_dict['Blond_Hair'] == 1:
-                p_list_new.append(person)
+                p1_list_new.append(person)
             else:
                 pass
     else:
         message = 'No, my person does not have blonde hair'
-        for person in p_list:
+        # update player 1's list
+        for person in p1_list:
             if person.attribute_dict['Blond_Hair'] == 0:
-                p_list_new.append(person)
+                p1_list_new.append(person)
             else:
                 pass
     #print(message)
-    #return p_list_new
-    return message
+
+    # computer makes new guess
+    att_dict = dict()
+    for attribute in a2_list:
+        att_dict[attribute] = 0
+        for p in p2_list:
+            if p.attribute_dict[attribute] == 1:
+                att_dict[attribute] += 1
+            else:
+                pass
+    # computer asks if player 1's person has attribute with highest frequency
+    max_att = max(att_dict, key=att_dict.get)
+    a2_list.remove(max_att)
+    message2 = 'Does your person have the attribute ' + max_att + '?'
+    #print(message2)
+
+    return message, message2, p1_list_new, a2_list
+
+
 
 ###########################################################################################################################################
 # Clear the main windows frame of all widgets
@@ -418,7 +489,7 @@ def win2():
     textbox.grid(row=3, column=0,columnspan=4)
 
     # initial question 
-    textbox["text"] = "Choose your person and click on their image"
+    textbox["text"] = "Choose your person and click on an attribute to the right to guess the computer's person"
     textbox["font"] = qfont
 
     ###########################################################################################################################################
@@ -470,8 +541,16 @@ def win2():
             else:
                 # wait a 0.25second before displaying the message
                 main.after(250)
-                textbox["text"]="You have chosen David. Push Yes to start the game or choose another person"
+                textbox["text"]="You have chosen David."
                 textbox["font"]=qfont
+                
+                pic1 = PIL.Image.open("Images/David.jpg")
+                #pic1 = pic1.resize((170,252), PIL.Image.ANTIALIAS)
+                crend = PIL.ImageTk.PhotoImage(pic1)
+                cimg = tk.Label(rightFrame,image=crend)
+                cimg.image = crend
+                cimg.grid(row=7, column=0, padx=5, pady=5)
+            
 
         def name1Push():
             if player2_person==david: 
@@ -495,6 +574,13 @@ def win2():
                 main.after(250)
                 textbox["text"]="You have chosen Lin. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
+
+                pic1 = PIL.Image.open("Images/Lin.jpg")
+                #pic1 = pic1.resize((170,252), PIL.Image.ANTIALIAS)
+                crend = PIL.ImageTk.PhotoImage(pic1)
+                cimg = tk.Label(rightFrame,image=crend)
+                cimg.image = crend
+                cimg.grid(row=7, column=0, padx=5, pady=5)
         
         def name2Push():
             if player2_person==lin: 
@@ -518,6 +604,13 @@ def win2():
                 textbox["text"]="You have chosen Ilene. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
 
+                pic1 = PIL.Image.open("Images/Mom.jpg")
+                #pic1 = pic1.resize((170,252), PIL.Image.ANTIALIAS)
+                crend = PIL.ImageTk.PhotoImage(pic1)
+                cimg = tk.Label(rightFrame,image=crend)
+                cimg.image = crend
+                cimg.grid(row=7, column=0, padx=5, pady=5)
+
         def name3Push():
             if player2_person==ilene: 
                 # wait a 0.25second before displaying the message
@@ -539,6 +632,13 @@ def win2():
                 main.after(250)
                 textbox["text"]="You have chosen Nathaniel. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
+
+                pic1 = PIL.Image.open("Images/Nathaniel.jpg")
+                #pic1 = pic1.resize((170,252), PIL.Image.ANTIALIAS)
+                crend = PIL.ImageTk.PhotoImage(pic1)
+                cimg = tk.Label(rightFrame,image=crend)
+                cimg.image = crend
+                cimg.grid(row=7, column=0, padx=5, pady=5)
 
         def name4Push():
             if player2_person==nathaniel: 
@@ -562,6 +662,13 @@ def win2():
                 textbox["text"]="You have chosen Nik. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
 
+                pic1 = PIL.Image.open("Images/Nick.jpg")
+                #pic1 = pic1.resize((170,252), PIL.Image.ANTIALIAS)
+                crend = PIL.ImageTk.PhotoImage(pic1)
+                cimg = tk.Label(rightFrame,image=crend)
+                cimg.image = crend
+                cimg.grid(row=7, column=0, padx=5, pady=5)
+
         def name5Push():
             if player2_person==nik: 
                 # wait a 0.25second before displaying the message
@@ -583,6 +690,13 @@ def win2():
                 main.after(250)
                 textbox["text"]="You have chosen Emily. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
+
+                pic1 = PIL.Image.open("Images/Roomate.jpg")
+                #pic1 = pic1.resize((170,252), PIL.Image.ANTIALIAS)
+                crend = PIL.ImageTk.PhotoImage(pic1)
+                cimg = tk.Label(rightFrame,image=crend)
+                cimg.image = crend
+                cimg.grid(row=7, column=0, padx=5, pady=5)
 
         def name6Push():
             if player2_person==emily: 
@@ -606,6 +720,13 @@ def win2():
                 textbox["text"]="You have chosen Sarah. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
 
+                pic1 = PIL.Image.open("Images/Sarah.jpg")
+                #pic1 = pic1.resize((170,252), PIL.Image.ANTIALIAS)
+                crend = PIL.ImageTk.PhotoImage(pic1)
+                cimg = tk.Label(rightFrame,image=crend)
+                cimg.image = crend
+                cimg.grid(row=7, column=0, padx=5, pady=5)
+
         def name7Push():
             if player2_person==sarah: 
                 # wait a 0.25second before displaying the message
@@ -627,6 +748,13 @@ def win2():
                 main.after(250)
                 textbox["text"]="You have chosen Xinran. Push Yes to start the game or choose another person"
                 textbox["font"]=qfont
+
+                pic1 = PIL.Image.open("Images/Xinran.jpg")
+                #pic1 = pic1.resize((170,252), PIL.Image.ANTIALIAS)
+                crend = PIL.ImageTk.PhotoImage(pic1)
+                cimg = tk.Label(rightFrame,image=crend)
+                cimg.image = crend
+                cimg.grid(row=7, column=0, padx=5, pady=5)
 
         def name8Push():
             if player2_person==xinran: 
@@ -714,9 +842,8 @@ def win2():
     # function that gives a value if the button has been pushed
     def YesisPushed():
         #print("pushed")
-        # game has started the first time yes is pushed
-        global gamestart
-        gamestart = 1
+        global player2_people
+        global player2_attributes
 
         # check if the computer guessed correctly 
         if checkguess == 1:
@@ -725,17 +852,26 @@ def win2():
             # wait a second before displaying the new question 
             main.after(1000)
 
-        msg=ifYesPushed(player2_people, player2_attributes, guess)
+        [msg, player2_people, player2_attributes] = ifYesPushed(player2_people, player2_attributes, guess)
 
-        # wait 0.25second before displaying the new question 
-        main.after(250)
-        textbox["text"]=msg
-        textbox["font"]=qfont
-        
+        if msg!=0:
+            # wait 0.25second before displaying the new question 
+            main.after(250)
+            textbox["text"]=msg
+            textbox["font"]=qfont
+        else:
+            # wait 0.25second before displaying the new question 
+            main.after(250)
+            textbox["text"]="Please Select Next Attribute"
+            textbox["font"]=qfont
+            
 
     # function that gives a value if the button has been pushed
     def NoisPushed():
         #print("pushed")
+        global player2_people
+        global player2_attributes
+
         # check if the computer guessed correctly 
         if checkguess == 1:
             textbox["text"] = "The computer guessed incorrectly"
@@ -743,12 +879,18 @@ def win2():
             # wait a second before displaying the new question 
             main.after(1000)
 
-        msg = ifNoPushed(player2_people, player2_attributes, guess)
+        [msg, player2_people, player2_attributes] = ifNoPushed(player2_people, player2_attributes, guess)
 
-        # wait 0.25second before displaying the new question 
-        main.after(250)
-        textbox["text"]=msg
-        textbox["font"]=qfont
+        if msg!=0:
+            # wait 0.25second before displaying the new question 
+            main.after(250)
+            textbox["text"]=msg
+            textbox["font"]=qfont
+        else:
+            # wait 0.25second before displaying the new question 
+            main.after(250)
+            textbox["text"]="Please Select Next Attribute"
+            textbox["font"]=qfont
 
 
     ############################################################################################################################################
@@ -777,63 +919,103 @@ def win2():
 
     # button callbacks 
     def malePushed():
+        # game has started the first time an attribute is pushed
+        global gamestart
+        gamestart = 1
+
+        global player1_people
+        global player2_people
+        global player2_attributes
+
         # wait a 0.25second before displaying the message
         main.after(250)
         textbox["text"]="You have asked: Is the person a male?"
         textbox["font"]=qfont
 
-        msg = ifMale(player2_person, player1_people)
+        [msg1, msg2, player1_people, player2_attributes] = ifMale(player2_person, player1_people, player2_people, player2_attributes)
         # wait 0.25second before displaying the new question 
         main.after(250)
-        textbox["text"]=msg
+        textbox["text"]=msg1+'\n'+msg2
         textbox["font"]=qfont
 
     def smilePushed():
+        # game has started the first time an attribute is pushed
+        global gamestart
+        gamestart = 1
+
+        global player1_people
+        global player2_people
+        global player2_attributes
+
         # wait a 0.25second before displaying the message
         main.after(250)
         textbox["text"]="You have asked: Is the person smiling?"
         textbox["font"]=qfont
 
-        msg = ifSmiling(player2_person, player1_people)
+        [msg1, msg2, player1_people, player2_attributes] = ifSmiling(player2_person, player1_people, player2_people, player2_attributes)
         # wait 0.25second before displaying the new question 
         main.after(250)
-        textbox["text"]=msg
+        textbox["text"]=msg1+'\n'+msg2
         textbox["font"]=qfont
 
     def hatPushed():
+        # game has started the first time an attribute is pushed
+        global gamestart
+        gamestart = 1
+
+        global player1_people
+        global player2_people
+        global player2_attributes
+
         # wait a 0.25second before displaying the message
         main.after(250)
         textbox["text"]="You have asked: Is the person wearing a hat?"
         textbox["font"]=qfont
 
-        msg = ifHat(player2_person, player1_people)
+        [msg1, msg2, player1_people, player2_attributes] = ifHat(player2_person, player1_people, player2_people, player2_attributes)
         # wait 0.25second before displaying the new question 
         main.after(250)
-        textbox["text"]=msg
+        textbox["text"]=msg1+'\n'+msg2
         textbox["font"]=qfont
 
     def blondePushed():
+        # game has started the first time an attribute is pushed
+        global gamestart
+        gamestart = 1
+
+        global player1_people
+        global player2_people
+        global player2_attributes
+
         # wait a 0.25second before displaying the message
         main.after(250)
         textbox["text"]="You have asked: Does the person have blonde hair?"
         textbox["font"]=qfont
 
-        msg = ifBlonde(player2_person, player1_people)
+        [msg1, msg2, player1_people, player2_attributes] = ifBlonde(player2_person, player1_people, player2_people, player2_attributes)
         # wait 0.25second before displaying the new question 
         main.after(250)
-        textbox["text"]=msg
+        textbox["text"]=msg1+'\n'+msg2
         textbox["font"]=qfont
 
     def glassesPushed():
+        # game has started the first time an attribute is pushed
+        global gamestart
+        gamestart = 1
+
+        global player1_people
+        global player2_people
+        global player2_attributes
+
         # wait a 0.25second before displaying the message
         main.after(250)
         textbox["text"]="You have asked: Is the person wearing glasses?"
         textbox["font"]=qfont
 
-        msg = ifEyeglasses(player2_person, player1_people)
+        [msg1, msg2, player1_people, player2_attributes] = ifEyeglasses(player2_person, player1_people, player2_people, player2_attributes)
         # wait 0.25second before displaying the new question 
         main.after(250)
-        textbox["text"]=msg
+        textbox["text"]=msg1+'\n'+msg2
         textbox["font"]=qfont
 
 
