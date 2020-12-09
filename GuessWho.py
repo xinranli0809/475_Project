@@ -251,7 +251,7 @@ def win1():
     clearwin()
 
     # define title font style 
-    title_font = tkfont.Font(family='Helvetica', size=30, weight="bold")
+    title_font = tkfont.Font(family='Century Gothic', size=30, weight="bold")
 
     # define text at top of page 
     label = tk.Label(text="Guess Who?", font=title_font)
@@ -260,7 +260,7 @@ def win1():
 
     # add game instructions 
     # font
-    instructFont = tkfont.Font(family='Helvetica', size=14)
+    instructFont = tkfont.Font(family='Century Gothic', size=14)
     instructtext = "How to Play the Game:" +'\n'
     instructtext = instructtext + "Add instructions once we decide if it's the computer guessing or we are going back and forth"
     instructlabel = tk.Label(text=instructtext,font=instructFont)
@@ -269,13 +269,14 @@ def win1():
 
     # button to start the game, green background with white words 
     # buton font 
-    buttonfont = tkfont.Font(family='Helvetica', size=12, weight="bold")
+    buttonfont = tkfont.Font(family='Century Gothic', size=12, weight="bold")
     button = tk.Button(text="Begin Game", height=2, width=15,bg='#099412', fg='#ffffff',
         command=win2,font=buttonfont)
     button.grid(row=3,column=0) #pack(pady=10)
+    win1labels.append(button)
 
     # add project and creators label 
-    botFont = tkfont.Font(family='Helvetica', size=11)
+    botFont = tkfont.Font(family='Century Gothic', size=11)
     creatrlabel = tk.Label(text="Xinran Li, Lin Liu, Nathaniel Nyberg, Sarah Ziselman",font=botFont)
     creatrlabel.grid(row=4,column=0,pady=5)
     win1labels.append(creatrlabel)
@@ -290,12 +291,25 @@ def win2():
     clearwin()
 
     # define font style for the questions
-    qfont = tkfont.Font(family='Helvetica', size=12)
+    qfont = tkfont.Font(family='Century Gothic', size=12)
 
-    
+    # define font style for the attributes title
+    attfont = tkfont.Font(family='Century Gothic', size=12, weight="bold")
+
+    # left side of the screen
+    leftFrame = tk.Frame()
+    leftFrame.grid(row=0,column=0)
+
+    # right side of the screen 
+    rightFrame = tk.Frame()
+    rightFrame.grid(row=0,column=1)
+
+    # bottom side of the screen 
+    botFrame = tk.Frame()
+    botFrame.grid(row=1,column=0, columnspan=2)
 
     # text box where the computer will communicate with the player, scrolls so older messages will be higher up 
-    textbox = Label(height=8,width=100)
+    textbox = Label(botFrame,height=5,width=100)
 
     # put on grid 
     textbox.grid(row=3, column=0,columnspan=4)
@@ -429,37 +443,85 @@ def win2():
 
 
         # make images into buttons and place the images on a 2x4 grid with borders along x and y to space out the pictures 
-        img1 = tk.Button(main,image=render1,command=p1Push)
+        img1 = tk.Button(leftFrame,image=render1,command=p1Push)
         img1.image = render1
-        img1.grid(row=0, column=0, padx=5, pady=5, sticky="e")
+        img1.grid(row=2, column=0, padx=5, pady=5)
+        # label the picture 
+        it1 = Label(leftFrame)
+        it1.grid(row=1, column=0)
+        it1["text"] = "David"
+        it1["font"] = attfont
 
-        img2 = tk.Button(main,image=render2,command=p2Push)
+        img2 = tk.Button(leftFrame,image=render2,command=p2Push)
         img2.image = render2
-        img2.grid(row=0, column=1, padx=5, pady=5)
+        img2.grid(row=2, column=1, padx=5, pady=5)
+        # label the picture 
+        it2 = Label(leftFrame)
+        it2.grid(row=1, column=1)
+        it2["text"] = "Lin"
+        it2["font"] = attfont
 
-        img3 = tk.Button(main,image=render3,command=p3Push)
+        img3 = tk.Button(leftFrame,image=render3,command=p3Push)
         img3.image = render3
-        img3.grid(row=0, column=2, padx=5, pady=5)
+        img3.grid(row=2, column=2, padx=5, pady=5)
+        # label the picture 
+        it3 = Label(leftFrame)
+        it3.grid(row=1, column=2)
+        it3["text"] = "Ilene"
+        it3["font"] = attfont
 
-        img4 = tk.Button(main,image=render4,command=p4Push)
+        img4 = tk.Button(leftFrame,image=render4,command=p4Push)
         img4.image = render4
-        img4.grid(row=0, column=3, padx=5, pady=5)
+        img4.grid(row=2, column=3, padx=5, pady=5)
+        # label the picture 
+        it4 = Label(leftFrame)
+        it4.grid(row=1, column=3)
+        it4["text"] = "Nathaniel"
+        it4["font"] = attfont
 
-        img5 = tk.Button(main,image=render5,command=p5Push)
+        img5 = tk.Button(leftFrame,image=render5,command=p5Push)
         img5.image = render5
-        img5.grid(row=1, column=0, padx=5, pady=5, sticky="e")
+        img5.grid(row=5, column=0, padx=5, pady=5)
+        # label the picture 
+        it5 = Label(leftFrame)
+        it5.grid(row=4, column=0)
+        it5["text"] = "Nik"
+        it5["font"] = attfont
 
-        img6 = tk.Button(main,image=render6,command=p6Push)
+        img6 = tk.Button(leftFrame,image=render6,command=p6Push)
         img6.image = render6
-        img6.grid(row=1, column=1, padx=5, pady=5)
+        img6.grid(row=5, column=1, padx=5, pady=5)
+        # label the picture 
+        it6 = Label(leftFrame)
+        it6.grid(row=4, column=1)
+        it6["text"] = "Emily"
+        it6["font"] = attfont
 
-        img7 = tk.Button(main,image=render7,command=p7Push)
+        img7 = tk.Button(leftFrame,image=render7,command=p7Push)
         img7.image = render7
-        img7.grid(row=1, column=2, padx=5, pady=5)
+        img7.grid(row=5, column=2, padx=5, pady=5)
+        # label the picture 
+        it7 = Label(leftFrame)
+        it7.grid(row=4, column=2)
+        it7["text"] = "Sarah"
+        it7["font"] = attfont
         
-        img8 = tk.Button(main,image=render8,command=p8Push)
+        img8 = tk.Button(leftFrame,image=render8,command=p8Push)
         img8.image = render8
-        img8.grid(row=1, column=3, padx=5, pady=5)
+        img8.grid(row=5, column=3, padx=5, pady=5)
+        # label the picture 
+        it8 = Label(leftFrame)
+        it8.grid(row=4, column=3)
+        it8["text"] = "Xinran"
+        it8["font"] = attfont
+
+        spacer1 = Label(leftFrame)
+        spacer1.grid(row=3)
+        spacer1["text"]="   "
+
+        spacer2 = Label(leftFrame)
+        spacer2.grid(row=0)
+        spacer2["text"]="   "
     
 
     # load and place pictures 
@@ -491,19 +553,85 @@ def win2():
         main.after(250)
         textbox["text"]=msg
         textbox["font"]=qfont
+
+
     ############################################################################################################################################
-
-
     # buttons for yes and no response  
-    buttonfont = tkfont.Font(family='Helvetica', size=12, weight="bold")
+    buttonfont = tkfont.Font(family='Century Gothic', size=12, weight="bold")
 
     # yes button with green background and white text
-    yesbutton = tk.Button(main,text="Yes", height=1, width=10,bg='#099412', fg='#ffffff',font=buttonfont,command=YesisPushed)
+    yesbutton = tk.Button(botFrame,text="Yes", height=1, width=10,bg='#099412', fg='#ffffff',font=buttonfont,command=YesisPushed)
     yesbutton.grid(row=4,column=1,padx=10,pady=15,sticky="n")
 
     # no button with red background and white text 
-    nobutton = tk.Button(main,text="No", height=1, width=10,bg='#ab0a0a', fg='#ffffff',font=buttonfont,command=NoisPushed)
+    nobutton = tk.Button(botFrame,text="No", height=1, width=10,bg='#ab0a0a', fg='#ffffff',font=buttonfont,command=NoisPushed)
     nobutton.grid(row=4,column=2,padx=10,pady=15,sticky="n")   
+
+
+    ############################################################################################################################################
+    # attributes list section 
+    attrlabel = Label(rightFrame,width=10)
+
+    # put on grid 
+    attrlabel.grid(row=0, column=0, padx=20,sticky="s")
+
+    # List of Attributes title 
+    attrlabel["text"] = "Attributes List"
+    attrlabel["font"]= attfont
+
+    # button callbacks 
+    def malePushed():
+        # wait a 0.25second before displaying the message
+        main.after(250)
+        textbox["text"]="You have asked: Is the person a male?"
+        textbox["font"]=qfont
+
+    def smilePushed():
+        # wait a 0.25second before displaying the message
+        main.after(250)
+        textbox["text"]="You have asked: Is the person smiling?"
+        textbox["font"]=qfont
+
+    def hatPushed():
+        # wait a 0.25second before displaying the message
+        main.after(250)
+        textbox["text"]="You have asked: Is the person wearing a hat?"
+        textbox["font"]=qfont
+
+    def blondePushed():
+        # wait a 0.25second before displaying the message
+        main.after(250)
+        textbox["text"]="You have asked: Does the person have blonde hair?"
+        textbox["font"]=qfont
+
+    def glassesPushed():
+        # wait a 0.25second before displaying the message
+        main.after(250)
+        textbox["text"]="You have asked: Is the person wearing glasses?"
+        textbox["font"]=qfont
+
+    # attribute buttons  
+    buttonfont = tkfont.Font(family='Century Gothic', size=10)
+
+    # male button
+    malebut = tk.Button(rightFrame,text="Is Male?", height=1, width=18,font=buttonfont,command=malePushed)
+    malebut.grid(row=1,column=0,padx=30,pady=10,sticky="n")
+
+    # smiling button 
+    smilebut = tk.Button(rightFrame,text="Is Smiling?", height=1, width=18,font=buttonfont,command=smilePushed)
+    smilebut.grid(row=2,column=0,padx=30,pady=10,sticky="n")   
+
+    # hat button
+    hatbut = tk.Button(rightFrame,text="Is Wearing a Hat?", height=1, width=18,font=buttonfont,command=hatPushed)
+    hatbut.grid(row=3,column=0,padx=30,pady=10,sticky="n")
+
+    # blond hair button 
+    blondebut = tk.Button(rightFrame,text="Has Blonde Hair?", height=1, width=18,font=buttonfont,command=blondePushed)
+    blondebut.grid(row=4,column=0,padx=30,pady=10,sticky="n")  
+
+    # glasses button 
+    glassesbut = tk.Button(rightFrame,text="Is Wearing Glasses?", height=1, width=18,font=buttonfont,command=glassesPushed)
+    glassesbut.grid(row=5,column=0,padx=30,pady=10,sticky="n")  
 
 win1()
 main.mainloop()
