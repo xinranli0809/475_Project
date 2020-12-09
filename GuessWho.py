@@ -5,9 +5,12 @@ import PIL.Image
 import PIL.ImageTk
 import numpy as np
 import tkinter as tk
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
+from tensorflow.keras import backend as K
 from tkinter import Label
 from tkinter import font as tkfont
-
 
 main = tk.Tk()
 
@@ -64,75 +67,67 @@ def classify(fname, model):
 
     return attrResult
 
+def loadModel(attribute):
+    '''
+    This function loads a pretrained model. It takes the attribute name associated with the model as a string
+    and returns the loaded model.
+    '''
+    model = createModel(0)
+    # expect_partial() is needed to silence warnings about incomplete checkpoint restores
+    # A lot of variables are unused when just predicting, tensorflow prints a warning for each variable you don't use
+    model.load_weights('./models/'+str(attribute)+' Model').expect_partial()
+    return model
+
+def createModel(compileEnable):
+    '''
+    This function creates the model structure to be trained with our labeled data. It utilizes the keras pretrained
+    inception model and adds some final layers to be trained on top of with out labeled data.
+    '''
+    inceptionModel = keras.applications.InceptionV3(include_top = False)
+    inceptionModel.trainable = False
+    # print(inceptionModel.summary())
+    x = inceptionModel.output
+    x = layers.GlobalAveragePooling2D()(x)
+    x = layers.Dense(1024, activation="relu")(x)
+    x = layers.Dropout(0.5)(x)
+    x = layers.Dense(512, activation="relu")(x)
+    predictions = layers.Dense(2, activation="softmax")(x)
+    finalModel = keras.Model(inputs = inceptionModel.input, outputs = predictions)
+
+    if compileEnable == 1:
+        finalModel.compile(optimizer = 'adam',
+                        loss=tf.keras.losses.CategoricalCrossentropy(from_logits=False),
+                        metrics=['categorical_accuracy'])
+        return finalModel
+    else:
+        return finalModel
 
 ################################################################################################################################
 # People objects
 nathaniel = Person('Nathaniel', 'Images/Nathaniel.jpg')
-nathaniel.attribute_dict['Male'] = 1
-nathaniel.attribute_dict['Eyeglasses'] = 0
-nathaniel.attribute_dict['Wearing_hat'] = 1
-nathaniel.attribute_dict['Smiling'] = 1
-nathaniel.attribute_dict['Blond_Hair'] = 0
-
 sarah = Person('Sarah', 'Images/Sarah.jpg')
-sarah.attribute_dict['Male'] = 0
-sarah.attribute_dict['Eyeglasses'] = 0
-sarah.attribute_dict['Wearing_hat'] = 0
-sarah.attribute_dict['Smiling'] = 1
-sarah.attribute_dict['Blond_Hair'] = 1
-
 lin = Person('Lin', 'Images/Lin.jpg')
-lin.attribute_dict['Male'] = 0
-lin.attribute_dict['Eyeglasses'] = 0
-lin.attribute_dict['Wearing_hat'] = 1
-lin.attribute_dict['Smiling'] = 1
-lin.attribute_dict['Blond_Hair'] = 0
-
 xinran = Person('Xinran', 'Images/Xinran.jpg')
-xinran.attribute_dict['Male'] = 1
-xinran.attribute_dict['Eyeglasses'] = 0
-xinran.attribute_dict['Wearing_hat'] = 0
-xinran.attribute_dict['Smiling'] = 0
-xinran.attribute_dict['Blond_Hair'] = 0
-
 david = Person('David', 'Images/David.jpg')
-david.attribute_dict['Male'] = 1
-david.attribute_dict['Eyeglasses'] = 0
-david.attribute_dict['Wearing_hat'] = 0
-david.attribute_dict['Smiling'] = 1
-david.attribute_dict['Blond_Hair'] = 1
-
 ilene = Person('Ilene', 'Images/Ilene.jpg')
-ilene.attribute_dict['Male'] = 0
-ilene.attribute_dict['Eyeglasses'] = 1
-ilene.attribute_dict['Wearing_hat'] = 0
-ilene.attribute_dict['Smiling'] = 1
-ilene.attribute_dict['Blond_Hair'] = 0
-
 emily = Person('Emily', 'Images/Emily.jpg')
-emily.attribute_dict['Male'] = 0
-emily.attribute_dict['Eyeglasses'] = 1
-emily.attribute_dict['Wearing_hat'] = 0
-emily.attribute_dict['Smiling'] = 1
-emily.attribute_dict['Blond_Hair'] = 1
-
 nik = Person('Nik', 'Images/Nik.jpg')
-nik.attribute_dict['Male'] = 1
-nik.attribute_dict['Eyeglasses'] = 1
-nik.attribute_dict['Wearing_hat'] = 0
-nik.attribute_dict['Smiling'] = 0
-nik.attribute_dict['Blond_Hair'] = 0
-
 
 # people library that is unchanged, contains all the people in the game
-people_library = [nathaniel, sarah, lin, xinran, david, ilene, emily, nik]
+people_library = [nathaniel, sarah, lin, xinran, david, ilene, emily, nik]    
 # player 1 (person)'s library of people
 player1_people = [nathaniel, sarah, lin, xinran, david, ilene, emily, nik]
 # player 2 (computer)'s library of people
 player2_people = [nathaniel, sarah, lin, xinran, david, ilene, emily, nik]
 
-player1_attributes = ['Male', 'Eyeglasses', 'Wearing_hat', 'Smiling', 'Blond_Hair']
-player2_attributes = ['Male', 'Eyeglasses', 'Wearing_hat', 'Smiling', 'Blond_Hair']
+player1_attributes = ['Male', 'Eyeglasses', 'Wearing_Hat', 'Smiling', 'Blond_Hair']
+player2_attributes = ['Male', 'Eyeglasses', 'Wearing_Hat', 'Smiling', 'Blond_Hair']
+
+for attr in player1_attributes:
+    newModel = loadModel(attr)
+    for person in people_library:
+        person.attribute_dict[attr] = classify(person.ID,newModel)
+
 
 # computer randomly chooses a person 
 player2_person = rand.choice(people_library)
@@ -277,11 +272,11 @@ def ifHat(p2_person, p1_list, p2_list, a2_list):
     """
     # computer responds yes or no
     p1_list_new = []
-    if p2_person.attribute_dict['Wearing_hat'] == 1:
+    if p2_person.attribute_dict['Wearing_Hat'] == 1:
         message = 'Yes, my person is wearing a hat'
         # update player 1's list
         for person in p1_list:
-            if person.attribute_dict['Wearing_hat'] == 1:
+            if person.attribute_dict['Wearing_Hat'] == 1:
                 p1_list_new.append(person)
             else:
                 pass
@@ -289,7 +284,7 @@ def ifHat(p2_person, p1_list, p2_list, a2_list):
         message = 'No, my person is not wearing a hat'
         # update player 1's list
         for person in p1_list:
-            if person.attribute_dict['Wearing_hat'] == 0:
+            if person.attribute_dict['Wearing_Hat'] == 0:
                 p1_list_new.append(person)
             else:
                 pass
@@ -401,7 +396,6 @@ def ifBlonde(p2_person, p1_list, p2_list, a2_list):
     return message, message2, p1_list_new, a2_list
 
 
-
 ###########################################################################################################################################
 # Clear the main windows frame of all widgets
 def clearwin():
@@ -506,7 +500,7 @@ def win2():
         #pic2 = pic2.resize((170,252), PIL.Image.ANTIALIAS)
         render2 = PIL.ImageTk.PhotoImage(pic2)
 
-        pic3 = PIL.Image.open("Images/Mom.jpg")
+        pic3 = PIL.Image.open("Images/Ilene.jpg")
         #pic3 = pic3.resize((170,252), PIL.Image.ANTIALIAS)
         render3 = PIL.ImageTk.PhotoImage(pic3)
 
@@ -514,11 +508,11 @@ def win2():
         #pic4 = pic4.resize((170,252), PIL.Image.ANTIALIAS)
         render4 = PIL.ImageTk.PhotoImage(pic4)
 
-        pic5 = PIL.Image.open("Images/Nick.jpg")
+        pic5 = PIL.Image.open("Images/Nik.jpg")
         #pic5 = pic5.resize((170,252), PIL.Image.ANTIALIAS)
         render5 = PIL.ImageTk.PhotoImage(pic5)
 
-        pic6 = PIL.Image.open("Images/Roomate.jpg")
+        pic6 = PIL.Image.open("Images/Emily.jpg")
         #pic6 = pic6.resize((170,252), PIL.Image.ANTIALIAS)
         render6 = PIL.ImageTk.PhotoImage(pic6)
 
